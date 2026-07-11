@@ -102,16 +102,23 @@ Without them, you can still register and log in with an email and password.
 
 ## The Minecraft add-on
 
-To try the full loop, package and install the behavior pack:
+The easiest way to install the behavior pack is to **download the latest `minelog.mcpack` from
+the [Releases page](https://github.com/erikaheidi/minelog/releases/latest)** and double-click it
+— Minecraft imports it automatically (works great on Windows). Then enable the behavior pack on
+your world (with the Scripting/Beta APIs experiment on if prompted) and start saving waypoints.
+
+Prefer to build it from source? Package the pack yourself:
 
 ```bash
 cd addon && zip -r ../minelog.mcpack . -x 'README.md' && cd ..
 ```
 
-Double-click `minelog.mcpack` to import it into Minecraft, enable the behavior pack on your
-world (with the Scripting/Beta APIs experiment on if prompted), and start saving waypoints.
 Full instructions live in [`addon/README.md`](addon/README.md) and on the app's
 **How it Works** page.
+
+> Releases are cut from the GitHub UI: publishing a release triggers the `release-addon`
+> workflow, which builds `minelog.mcpack` from [`addon/`](addon/) and attaches it to that
+> release automatically.
 
 ## Running the tests
 

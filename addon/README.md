@@ -15,18 +15,32 @@ cannot make HTTP requests, you export the JSON in-game and paste it into the Min
 | `!wp clear confirm` | Delete all saved waypoints |
 | `!wp help` | Show usage |
 
-## Packaging
+## Installing
 
-Zip the **contents** of this `addon/` directory (so `manifest.json` is at the zip root) and
-name it `minelog.mcpack`:
+The easiest option is to **download the latest `minelog.mcpack` from the
+[Releases page](https://github.com/erikaheidi/minelog/releases/latest)** and double-click it —
+Minecraft imports it automatically (no tools needed, ideal on Windows).
+
+To build it from source instead, zip the **contents** of this `addon/` directory (so
+`manifest.json` is at the zip root) and name it `minelog.mcpack`:
 
 ```bash
 cd addon && zip -r ../minelog.mcpack . -x 'README.md' && cd ..
 ```
 
-Double-click `minelog.mcpack` to import it into Minecraft, then enable the **behavior pack** on
-your Realm's world (Realm settings → world → Behavior Packs). The pack needs the Scripting/
-Beta APIs experiment enabled if your version prompts for it.
+Either way, double-click `minelog.mcpack` to import it into Minecraft, then enable the
+**behavior pack** on your Realm's world (Realm settings → world → Behavior Packs). The pack
+needs the Scripting/Beta APIs experiment enabled if your version prompts for it.
+
+## Releasing (maintainers)
+
+Publishing a GitHub release triggers the `release-addon` workflow
+([`.github/workflows/release-addon.yml`](../.github/workflows/release-addon.yml)), which packages
+this directory into `minelog.mcpack` and attaches it to the release.
+
+The release tag **must** match the `version` in [`manifest.json`](manifest.json) — the workflow
+verifies this and fails the build on a mismatch, so you can't ship a release without bumping the
+manifest. Tag `v1.0.0` (or `1.0.0`) for manifest version `[1, 0, 0]`.
 
 ## Getting data into Minelog
 

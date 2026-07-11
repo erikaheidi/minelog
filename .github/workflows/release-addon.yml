@@ -1,0 +1,38 @@
+name: release-addon
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Verify manifest version matches the release tag
+        run: |
+          manifest_version="$(jq -r '.header.version | join(".")' addon/manifest.json)"
+          tag_version="${GITHUB_REF_NAME#v}"
+          echo "manifest.json version: ${manifest_version}"
+          echo "release tag version:   ${tag_version}"
+          if [ "${manifest_version}" != "${tag_version}" ]; then
+            echo "::error::Release tag '${GITHUB_REF_NAME}' does not match addon/manifest.json version '${manifest_version}'. Bump header.version in the manifest (or fix the tag) so they match, e.g. tag 'v${manifest_version}'."
+            exit 1
+          fi
+
+      - name: Package the behavior pack
+        run: |
+          cd addon
+          zip -r ../minelog.mcpack . -x 'README.md'
+
+      - name: Attach minelog.mcpack to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" minelog.mcpack --clobber

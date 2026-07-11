@@ -41,8 +41,12 @@
                 <li class="flex gap-4">
                     <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">1</span>
                     <div>
-                        <p class="font-semibold">{{ __('Package the add-on') }}</p>
-                        <p class="mt-1 text-sm text-mine-muted">{{ __('Zip the contents of the addon/ directory so manifest.json sits at the zip root, and name it minelog.mcpack:') }}</p>
+                        <p class="font-semibold">{{ __('Download the add-on') }}</p>
+                        <p class="mt-1 text-sm text-mine-muted">
+                            {{ __('Grab the latest minelog.mcpack from the') }}
+                            <a href="https://github.com/erikaheidi/minelog/releases/latest" target="_blank" rel="noopener" class="font-semibold text-mine-green-2 underline">{{ __('Releases page') }}</a>{{ __(' on GitHub. No tools required — just download the file.') }}
+                        </p>
+                        <p class="mt-2 text-sm text-mine-muted">{{ __('Prefer to build it yourself? Zip the contents of the addon/ directory so manifest.json sits at the zip root:') }}</p>
                         <pre class="mt-3 overflow-x-auto rounded-lg border border-mine-line bg-mine-panel-2 p-3 text-sm"><code>cd addon &amp;&amp; zip -r ../minelog.mcpack . -x 'README.md' &amp;&amp; cd ..</code></pre>
                     </div>
                 </li>
