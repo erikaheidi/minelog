@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 use Throwable;
 
 class GoogleAuthController extends Controller
@@ -15,7 +16,7 @@ class GoogleAuthController extends Controller
     /**
      * Redirect the user to Google's OAuth consent screen.
      */
-    public function redirect(): RedirectResponse
+    public function redirect(): SymfonyRedirectResponse
     {
         return $this->driver()->redirect();
     }
@@ -68,7 +69,10 @@ class GoogleAuthController extends Controller
      */
     private function driver(): Provider
     {
-        return Socialite::driver('google')
-            ->redirectUrl(config('services.google.redirect') ?: route('google.callback'));
+        config([
+            'services.google.redirect' => config('services.google.redirect') ?: route('google.callback'),
+        ]);
+
+        return Socialite::driver('google');
     }
 }

@@ -44,7 +44,7 @@ class World extends Model
     protected static function booted(): void
     {
         static::creating(function (World $world): void {
-            if ($world->slug === null || $world->slug === '') {
+            if (blank($world->slug)) {
                 $world->slug = $world->uniqueSlug($world->name);
             }
         });
@@ -87,11 +87,14 @@ class World extends Model
      */
     public function dimensionsPresent(): array
     {
-        return $this->waypoints()
-            ->select('dimension')
-            ->distinct()
-            ->pluck('dimension')
-            ->all();
+        return array_values(
+            $this->waypoints()
+                ->select('dimension')
+                ->distinct()
+                ->get()
+                ->map(fn (Waypoint $waypoint): string => $waypoint->dimension)
+                ->all()
+        );
     }
 
     /**
@@ -101,22 +104,23 @@ class World extends Model
      */
     public function mapMarkers(): array
     {
-        return $this->waypoints()
-            ->whereNotNull('x')
-            ->whereNotNull('z')
-            ->get()
-            ->map(fn (Waypoint $w) => [
-                'name' => $w->name ?: 'Unnamed',
-                'x' => $w->x,
-                'y' => $w->y,
-                'z' => $w->z,
-                'dimension' => $w->dimension,
-                'color' => $w->dimensionColor(),
-                'note' => $w->note,
-                'shot' => $w->screenshot_path ? Storage::url($w->screenshot_path) : null,
-            ])
-            ->values()
-            ->all();
+        return array_values(
+            $this->waypoints()
+                ->whereNotNull('x')
+                ->whereNotNull('z')
+                ->get()
+                ->map(fn (Waypoint $w): array => [
+                    'name' => $w->name ?: 'Unnamed',
+                    'x' => $w->x,
+                    'y' => $w->y,
+                    'z' => $w->z,
+                    'dimension' => $w->dimension,
+                    'color' => $w->dimensionColor(),
+                    'note' => $w->note,
+                    'shot' => $w->screenshot_path ? Storage::url($w->screenshot_path) : null,
+                ])
+                ->all()
+        );
     }
 
     private function uniqueSlug(string $name): string
