@@ -45,6 +45,15 @@ new #[Title('World')] class extends Component {
 
     public string $note = '';
 
+    // Add-waypoint form
+    public string $newName = '';
+
+    public ?int $newX = null;
+
+    public ?int $newY = null;
+
+    public ?int $newZ = null;
+
     public function mount(World $world): void
     {
         $this->authorize('update', $world);
@@ -60,6 +69,31 @@ new #[Title('World')] class extends Component {
         $this->payload = '';
 
         Flux::toast(variant: 'success', text: __('Imported :created, updated :updated, skipped :skipped.', $result));
+    }
+
+    public function addWaypoint(): void
+    {
+        $this->authorize('update', $this->world);
+
+        $validated = $this->validate([
+            'newName' => ['required', 'string', 'max:120'],
+            'newX' => ['required', 'integer'],
+            'newY' => ['required', 'integer'],
+            'newZ' => ['required', 'integer'],
+        ]);
+
+        $this->world->waypoints()->create([
+            'name' => $validated['newName'],
+            'x' => $validated['newX'],
+            'y' => $validated['newY'],
+            'z' => $validated['newZ'],
+            'dimension' => 'overworld',
+            'status' => 'confirmed',
+        ]);
+
+        $this->reset('newName', 'newX', 'newY', 'newZ');
+
+        Flux::toast(variant: 'success', text: __('Waypoint added. Edit it to set dimension, tags or notes.'));
     }
 
     public function startEditWorld(): void
@@ -206,20 +240,51 @@ new #[Title('World')] class extends Component {
 
     <x-world-tabs :world="$world" active="log" />
 
-    {{-- Import panel --}}
-    <flux:card>
-        <form wire:submit="import" class="flex flex-col gap-4">
-            <flux:textarea
-                wire:model="payload"
-                :label="__('Import from Realm')"
-                :placeholder="__('Paste the JSON line printed by !wp export')"
-                rows="4"
-            />
-            <div>
-                <flux:button type="submit" variant="primary" icon="arrow-down-tray">{{ __('Import waypoints') }}</flux:button>
+    {{-- Add / Import panel (collapsed by default) --}}
+    <div x-data="{ open: false }" class="flex flex-col gap-4">
+        <div>
+            <flux:button variant="primary" icon="plus" @click="open = ! open">
+                <span x-show="! open">{{ __('Add Waypoints') }}</span>
+                <span x-show="open" x-cloak>{{ __('Hide forms') }}</span>
+            </flux:button>
+        </div>
+
+        <flux:card x-show="open" x-cloak>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+                {{-- Add a Waypoint --}}
+                <form wire:submit="addWaypoint" class="flex flex-col gap-4">
+                    <flux:heading size="lg">{{ __('Add a Waypoint') }}</flux:heading>
+
+                    <flux:input wire:model="newName" :label="__('Name')" :placeholder="__('e.g. Diamond cave')" required />
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <flux:input wire:model="newX" :label="__('X')" type="number" inputmode="numeric" required />
+                        <flux:input wire:model="newY" :label="__('Y')" type="number" inputmode="numeric" required />
+                        <flux:input wire:model="newZ" :label="__('Z')" type="number" inputmode="numeric" required />
+                    </div>
+
+                    <div>
+                        <flux:button type="submit" variant="primary" icon="plus">{{ __('Add waypoint') }}</flux:button>
+                    </div>
+                </form>
+
+                {{-- Import from Realm --}}
+                <form wire:submit="import" class="flex flex-col gap-4 md:border-l md:border-mine-line md:pl-8">
+                    <flux:heading size="lg">{{ __('Import from Realm') }}</flux:heading>
+
+                    <flux:textarea
+                        wire:model="payload"
+                        :label="__('Paste export JSON')"
+                        :placeholder="__('Paste the JSON line printed by !wp export')"
+                        rows="4"
+                    />
+                    <div>
+                        <flux:button type="submit" variant="primary" icon="arrow-down-tray">{{ __('Import waypoints') }}</flux:button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </flux:card>
+        </flux:card>
+    </div>
 
     {{-- Filters --}}
     <div class="flex flex-wrap items-end gap-3">

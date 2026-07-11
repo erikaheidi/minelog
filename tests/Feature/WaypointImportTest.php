@@ -150,6 +150,41 @@ test('a user can edit and confirm a waypoint in their world', function () {
         ->and($wp->tags)->toBe(['mining', 'diamonds']);
 });
 
+test('a user can manually add a waypoint to their world', function () {
+    $user = User::factory()->create();
+    $world = World::factory()->for($user)->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::worlds.show', ['world' => $world])
+        ->set('newName', 'Base camp')
+        ->set('newX', 100)->set('newY', 64)->set('newZ', -200)
+        ->call('addWaypoint')
+        ->assertHasNoErrors()
+        ->assertSet('newName', '');
+
+    $wp = $world->waypoints()->firstOrFail();
+    expect($wp->name)->toBe('Base camp')
+        ->and([$wp->x, $wp->y, $wp->z])->toBe([100, 64, -200])
+        ->and($wp->dimension)->toBe('overworld')
+        ->and($wp->status)->toBe('confirmed')
+        ->and($wp->external_id)->toBeNull();
+});
+
+test('manual add requires a name and coordinates', function () {
+    $user = User::factory()->create();
+    $world = World::factory()->for($user)->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::worlds.show', ['world' => $world])
+        ->set('newName', '')
+        ->call('addWaypoint')
+        ->assertHasErrors(['newName', 'newX', 'newY', 'newZ']);
+
+    expect($world->waypoints()->count())->toBe(0);
+});
+
 test('a user can delete a waypoint in their world', function () {
     $user = User::factory()->create();
     $world = World::factory()->for($user)->create();

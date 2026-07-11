@@ -9,10 +9,18 @@ Contributions are welcome.
 
 ## How it works
 
-Minecraft Bedrock add-ons running on Realms and regular clients **cannot make HTTP requests**,
-so Minelog can't talk to your game directly. Instead it splits the job in two: a Bedrock
-behavior pack captures your positions in-game, and this web app stores, organizes, and shares
-them. You move data between the two by copy-pasting a single line of JSON.
+There are two ways to get waypoints into Minelog:
+
+- **Add them by hand.** Open a world and use the **Add a Waypoint** form to type in a name and
+  coordinates. Nothing to install — this is all you need to get started.
+- **Capture them in-game with the add-on.** For recording many exact positions as you play,
+  the optional *Minelog Waypoints* behavior pack saves them in Minecraft and exports the whole
+  batch at once.
+
+The add-on exists because Minecraft Bedrock add-ons running on Realms and regular clients
+**cannot make HTTP requests**, so Minelog can't talk to your game directly. Instead, a Bedrock
+behavior pack captures your positions in-game and you move them into the web app by
+copy-pasting a single line of JSON. With the add-on, the loop looks like this:
 
 1. **Save in-game.** With the *Minelog Waypoints* behavior pack enabled on your world, type
    `!wp save <label>` in chat to record your exact position (x, y, z + dimension) under a label.
@@ -101,6 +109,9 @@ GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
 Without them, you can still register and log in with an email and password.
 
 ## The Minecraft add-on
+
+The add-on is **optional** — you can always add waypoints by hand in the app. Install it when
+you want to capture many exact coordinates in-game instead of typing them in.
 
 The easiest way to install the behavior pack is to **download the latest `minelog.mcpack` from
 the [Releases page](https://github.com/erikaheidi/minelog/releases/latest)** and double-click it

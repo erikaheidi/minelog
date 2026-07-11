@@ -7,7 +7,7 @@
                 {{ __('Map every place worth remembering.') }}
             </h1>
             <p class="mx-auto mt-6 max-w-2xl text-lg text-mine-muted">
-                {{ __('Minelog turns your Minecraft Bedrock adventures into a shareable travel log — exact coordinates, saved in-game, browsed as a gallery and an interactive map.') }}
+                {{ __('Minelog turns your Minecraft Bedrock adventures into a shareable travel log — exact coordinates, added by hand or captured in-game, browsed as a gallery and an interactive map.') }}
             </p>
             <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
                 @auth
@@ -23,8 +23,8 @@
             {{-- How it works --}}
             <div class="mx-auto mt-16 grid max-w-4xl gap-4 text-left sm:grid-cols-3">
                 @foreach ([
-                    ['1', __('Save in-game'), __('Type !wp save <label> in Minecraft to record your exact position.')],
-                    ['2', __('Export & import'), __('Run !wp export, paste the JSON into Minelog. Coordinates are precise.')],
+                    ['1', __('Add waypoints'), __('Type a name and coordinates into Minelog by hand — or capture them in-game with the optional add-on.')],
+                    ['2', __('Map & organize'), __('Browse them as a card gallery and an interactive map, with notes, tags, and screenshots.')],
                     ['3', __('Share'), __('Flip a world to public and share its map and seed with anyone.')],
                 ] as [$n, $heading, $body])
                     <div class="rounded-xl border border-mine-line bg-mine-panel p-5">

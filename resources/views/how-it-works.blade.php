@@ -7,18 +7,26 @@
                 {{ __('How Minelog works') }}
             </h1>
             <p class="mx-auto mt-6 max-w-2xl text-lg text-mine-muted">
-                {{ __('Minecraft Bedrock add-ons can\'t reach the internet, so Minelog uses a small behavior pack to capture your coordinates in-game. You export them as a line of JSON and paste it into Minelog. Here\'s the whole loop, step by step.') }}
+                {{ __('Add waypoints by hand right in Minelog, or install the optional behavior pack to capture your exact coordinates in-game and import them as a line of JSON. Here\'s the whole loop, step by step.') }}
             </p>
         </div>
     </section>
 
     <div class="mx-auto max-w-3xl px-4 py-14 sm:px-6">
+        {{-- The add-on is optional --}}
+        <div class="rounded-xl border border-mine-green-2/40 bg-mine-green/10 p-5">
+            <p class="font-semibold text-mine-text">{{ __('The add-on is optional.') }}</p>
+            <p class="mt-1 text-sm text-mine-muted">
+                {{ __('You can add waypoints by hand at any time — open a world in Minelog and use the Add a Waypoint form to enter a name and coordinates. The Minelog Waypoints behavior pack below is the fastest way to capture lots of exact positions while you play, but it is not required to use Minelog.') }}
+            </p>
+        </div>
+
         {{-- Overview --}}
-        <section class="grid gap-4 sm:grid-cols-3">
+        <section class="mt-10 grid gap-4 sm:grid-cols-3">
             @foreach ([
-                ['1', __('Install the add-on'), __('Import the Minelog Waypoints behavior pack and enable it on your world.')],
+                ['1', __('Install the add-on'), __('Optional: import the Minelog Waypoints behavior pack to capture coordinates in-game.')],
                 ['2', __('Save & export'), __('Use !wp commands in chat, then export your log as JSON.')],
-                ['3', __('Import & share'), __('Paste the JSON into Minelog to browse the map and share it.')],
+                ['3', __('Add & share'), __('Add waypoints by hand or paste the export, then browse the map and share it.')],
             ] as [$n, $heading, $body])
                 <div class="rounded-xl border border-mine-line bg-mine-panel p-5">
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-mine-green/20 font-bold text-mine-green-2">{{ $n }}</div>
@@ -31,10 +39,10 @@
         {{-- Step 1 --}}
         <section class="mt-16">
             <h2 class="text-2xl font-bold tracking-tight">
-                <span class="text-mine-green-2">1.</span> {{ __('Install the Minecraft add-on') }}
+                <span class="text-mine-green-2">1.</span> {{ __('Install the Minecraft add-on (optional)') }}
             </h2>
             <p class="mt-3 text-mine-muted">
-                {{ __('Minelog ships with a Bedrock behavior pack called Minelog Waypoints. It records your exact position with a label and stores the log inside your world, so it survives restarts and works on Realms.') }}
+                {{ __('Skip this if you\'d rather add waypoints by hand — jump to step 4. Otherwise, Minelog ships with a Bedrock behavior pack called Minelog Waypoints. It records your exact position with a label and stores the log inside your world, so it survives restarts and works on Realms.') }}
             </p>
 
             <ol class="mt-6 space-y-5">
@@ -141,7 +149,7 @@
         {{-- Step 4 --}}
         <section class="mt-16">
             <h2 class="text-2xl font-bold tracking-tight">
-                <span class="text-mine-green-2">4.</span> {{ __('Import into Minelog') }}
+                <span class="text-mine-green-2">4.</span> {{ __('Add waypoints in Minelog') }}
             </h2>
             <ol class="mt-6 space-y-5">
                 <li class="flex gap-4">
@@ -154,8 +162,8 @@
                 <li class="flex gap-4">
                     <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">2</span>
                     <div>
-                        <p class="font-semibold">{{ __('Paste the JSON') }}</p>
-                        <p class="mt-1 text-sm text-mine-muted">{{ __('Open the world and paste the exported line into the "Import from Realm" box, then press Import waypoints. Re-importing is safe — Minelog updates existing waypoints instead of duplicating them.') }}</p>
+                        <p class="font-semibold">{{ __('Add by hand, or paste an export') }}</p>
+                        <p class="mt-1 text-sm text-mine-muted">{{ __('Open the world and press Add Waypoints. Use the "Add a Waypoint" form to type in a name and coordinates — no add-on needed — or, if you used the add-on, paste the exported line into "Import from Realm" and press Import waypoints. Re-importing is safe: Minelog updates existing waypoints instead of duplicating them.') }}</p>
                     </div>
                 </li>
                 <li class="flex gap-4">
