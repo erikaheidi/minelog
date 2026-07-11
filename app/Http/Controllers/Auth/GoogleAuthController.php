@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
 use Throwable;
 
@@ -16,7 +17,7 @@ class GoogleAuthController extends Controller
      */
     public function redirect(): RedirectResponse
     {
-        return Socialite::driver('google')->redirect();
+        return $this->driver()->redirect();
     }
 
     /**
@@ -25,7 +26,7 @@ class GoogleAuthController extends Controller
     public function callback(): RedirectResponse
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = $this->driver()->user();
         } catch (Throwable) {
             return redirect()->route('login')->withErrors([
                 'email' => __('Unable to sign in with Google. Please try again.'),
@@ -55,5 +56,19 @@ class GoogleAuthController extends Controller
         Auth::login($user, remember: true);
 
         return redirect()->intended(config('fortify.home'));
+    }
+
+    /**
+     * Resolve the Google driver with an explicit redirect URL.
+     *
+     * The redirect URI must be identical on the redirect and the token
+     * exchange, so it is set here for both. It defaults to the named
+     * callback route (derived from APP_URL) and only falls back to the
+     * configured value when GOOGLE_REDIRECT_URI is explicitly set.
+     */
+    private function driver(): Provider
+    {
+        return Socialite::driver('google')
+            ->redirectUrl(config('services.google.redirect') ?: route('google.callback'));
     }
 }

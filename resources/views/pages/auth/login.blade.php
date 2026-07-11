@@ -5,6 +5,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
+        <x-auth-google-button :label="__('Sign in with Google')" />
 
         <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
             @csrf
@@ -49,8 +50,6 @@
                 </flux:button>
             </div>
         </form>
-
-        <x-auth-google-button :label="__('Sign in with Google')" />
 
         <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
             <span>{{ __('Don\'t have an account?') }}</span>

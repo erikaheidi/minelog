@@ -29,6 +29,7 @@
                 </a>
                 <nav class="ml-auto flex items-center gap-5 text-sm">
                     <a href="{{ route('home') }}" class="font-semibold text-mine-muted transition hover:text-mine-text">{{ __('Explore') }}</a>
+                    <a href="{{ route('how-it-works') }}" class="font-semibold text-mine-muted transition hover:text-mine-text">{{ __('How it Works') }}</a>
                     @auth
                         <a href="{{ route('worlds.index') }}" class="rounded-lg bg-mine-panel-2 px-4 py-1.5 font-semibold text-mine-text ring-1 ring-mine-line transition hover:ring-mine-green-2">{{ __('My Worlds') }}</a>
                     @else
