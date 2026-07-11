@@ -6,6 +6,8 @@ use Database\Factories\WaypointFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -18,8 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $dimension
  * @property string|null $note
  * @property array<int, string>|null $tags
- * @property \Illuminate\Support\Carbon|null $captured_at
- * @property string|null $screenshot_path
+ * @property Carbon|null $captured_at
  * @property string $status
  */
 class Waypoint extends Model
@@ -30,7 +31,7 @@ class Waypoint extends Model
     /** @var list<string> */
     protected $fillable = [
         'world_id', 'external_id', 'name', 'x', 'y', 'z', 'dimension', 'note', 'tags',
-        'captured_at', 'screenshot_path', 'status',
+        'captured_at', 'status',
     ];
 
     public const DIMENSIONS = ['overworld', 'nether', 'end'];
@@ -55,6 +56,14 @@ class Waypoint extends Model
     public function world(): BelongsTo
     {
         return $this->belongsTo(World::class);
+    }
+
+    /**
+     * @return HasMany<WaypointScreenshot, $this>
+     */
+    public function screenshots(): HasMany
+    {
+        return $this->hasMany(WaypointScreenshot::class);
     }
 
     public function hasCoords(): bool

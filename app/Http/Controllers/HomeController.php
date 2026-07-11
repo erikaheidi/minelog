@@ -16,7 +16,7 @@ class HomeController extends Controller
             ->public()
             ->when($q !== '', fn ($query) => $query->where('name', 'like', "%{$q}%"))
             ->withCount('waypoints')
-            ->with('user')
+            ->with(['user', 'coverScreenshot'])
             ->latest()
             ->get();
 

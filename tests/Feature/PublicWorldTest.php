@@ -1,7 +1,19 @@
 <?php
 
 use App\Models\Waypoint;
+use App\Models\WaypointScreenshot;
 use App\Models\World;
+
+test('the public world page embeds waypoint screenshots for the detail modal', function () {
+    $world = World::factory()->public()->create();
+    $waypoint = Waypoint::factory()->for($world)->create(['name' => 'Diamond cave']);
+    $shot = WaypointScreenshot::factory()->for($waypoint)->create(['disk' => 'public']);
+
+    $this->get(route('worlds.public', $world))
+        ->assertOk()
+        ->assertSee('Diamond cave')
+        ->assertSee($shot->path);
+});
 
 test('a guest can view a public world page', function () {
     $world = World::factory()->public()->create([
@@ -42,6 +54,16 @@ test('the landing lists public worlds and excludes private ones', function () {
         ->assertOk()
         ->assertSee('Public Explorer')
         ->assertDontSee('Secret Base');
+});
+
+test('the landing shows a world cover screenshot when one is available', function () {
+    $world = World::factory()->public()->create(['name' => 'Coastal Base']);
+    $waypoint = Waypoint::factory()->for($world)->create();
+    $shot = WaypointScreenshot::factory()->for($waypoint)->create(['disk' => 'public']);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee($shot->path);
 });
 
 test('the landing search filters public worlds by name', function () {

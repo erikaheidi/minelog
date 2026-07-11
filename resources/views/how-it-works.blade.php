@@ -7,7 +7,7 @@
                 {{ __('How Minelog works') }}
             </h1>
             <p class="mx-auto mt-6 max-w-2xl text-lg text-mine-muted">
-                {{ __('Add waypoints by hand right in Minelog, or install the optional behavior pack to capture your exact coordinates in-game and import them as a line of JSON. Here\'s the whole loop, step by step.') }}
+                {{ __('Add waypoints by hand right in Minelog, or install the optional behavior pack (currently only available for Minecraft Bedrock) to capture your exact coordinates in-game and import them as a line of JSON. Here\'s the whole loop, step by step.') }}
             </p>
         </div>
     </section>
@@ -22,11 +22,10 @@
         </div>
 
         {{-- Overview --}}
-        <section class="mt-10 grid gap-4 sm:grid-cols-3">
+        <section class="mt-10 grid gap-4 sm:grid-cols-2">
             @foreach ([
-                ['1', __('Install the add-on'), __('Optional: import the Minelog Waypoints behavior pack to capture coordinates in-game.')],
-                ['2', __('Save & export'), __('Use !wp commands in chat, then export your log as JSON.')],
-                ['3', __('Add & share'), __('Add waypoints by hand or paste the export, then browse the map and share it.')],
+                ['1', __('Capture in-game (optional)'), __('Install the Bedrock add-on, save positions with !wp commands, and export your log as a line of JSON.')],
+                ['2', __('Add & share in Minelog'), __('Add waypoints by hand or paste the export, enrich them with notes and screenshots, then map and share.')],
             ] as [$n, $heading, $body])
                 <div class="rounded-xl border border-mine-line bg-mine-panel p-5">
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-mine-green/20 font-bold text-mine-green-2">{{ $n }}</div>
@@ -36,120 +35,127 @@
             @endforeach
         </section>
 
-        {{-- Step 1 --}}
+        {{-- Step 1 (optional): capture with the add-on --}}
         <section class="mt-16">
             <h2 class="text-2xl font-bold tracking-tight">
-                <span class="text-mine-green-2">1.</span> {{ __('Install the Minecraft add-on (optional)') }}
+                <span class="text-mine-green-2">1.</span> {{ __('Capture coordinates with the Minecraft add-on (optional)') }}
             </h2>
             <p class="mt-3 text-mine-muted">
-                {{ __('Skip this if you\'d rather add waypoints by hand — jump to step 4. Otherwise, Minelog ships with a Bedrock behavior pack called Minelog Waypoints. It records your exact position with a label and stores the log inside your world, so it survives restarts and works on Realms.') }}
+                {{ __('Skip this whole section if you\'d rather add waypoints by hand — jump to step 2. Otherwise, Minelog ships with a Bedrock behavior pack called Minelog Waypoints. It records your exact position with a label and stores the log inside your world, so it survives restarts and works on Realms.') }}
             </p>
 
-            <ol class="mt-6 space-y-5">
-                <li class="flex gap-4">
-                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">1</span>
-                    <div>
-                        <p class="font-semibold">{{ __('Download the add-on') }}</p>
-                        <p class="mt-1 text-sm text-mine-muted">
-                            {{ __('Grab the latest minelog.mcpack from the') }}
-                            <a href="https://github.com/erikaheidi/minelog/releases/latest" target="_blank" rel="noopener" class="font-semibold text-mine-green-2 underline">{{ __('Releases page') }}</a>{{ __(' on GitHub. No tools required — just download the file.') }}
-                        </p>
-                        <p class="mt-2 text-sm text-mine-muted">{{ __('Prefer to build it yourself? Zip the contents of the addon/ directory so manifest.json sits at the zip root:') }}</p>
-                        <pre class="mt-3 overflow-x-auto rounded-lg border border-mine-line bg-mine-panel-2 p-3 text-sm"><code>cd addon &amp;&amp; zip -r ../minelog.mcpack . -x 'README.md' &amp;&amp; cd ..</code></pre>
-                    </div>
-                </li>
-                <li class="flex gap-4">
-                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">2</span>
-                    <div>
-                        <p class="font-semibold">{{ __('Import it into Minecraft') }}</p>
-                        <p class="mt-1 text-sm text-mine-muted">{{ __('Double-click minelog.mcpack (or open it with Minecraft). Bedrock imports it as an available behavior pack.') }}</p>
-                    </div>
-                </li>
-                <li class="flex gap-4">
-                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">3</span>
-                    <div>
-                        <p class="font-semibold">{{ __('Enable it on your world') }}</p>
-                        <p class="mt-1 text-sm text-mine-muted">{{ __('For a local world: Create/Edit World → Behavior Packs → activate Minelog Waypoints. For a Realm: Realm settings → World → Behavior Packs. If your version prompts for it, turn on the Scripting / Beta APIs experiment.') }}</p>
-                    </div>
-                </li>
-            </ol>
+            {{-- 1a. Install the add-on --}}
+            <div class="mt-10 border-l-2 border-mine-line pl-5 sm:pl-6">
+                <h3 class="text-lg font-bold tracking-tight">
+                    <span class="text-mine-green-2">1a.</span> {{ __('Install the add-on') }}
+                </h3>
 
-            <div class="mt-5 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
-                <span class="font-semibold text-mine-text">{{ __('Requirements:') }}</span>
-                {{ __('Minecraft Bedrock 1.21+. The add-on uses the @minecraft/server scripting API, which is Bedrock-only (it does not work on Java Edition).') }}
+                <ol class="mt-6 space-y-5">
+                    <li class="flex gap-4">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">1</span>
+                        <div>
+                            <p class="font-semibold">{{ __('Download the add-on') }}</p>
+                            <p class="mt-1 text-sm text-mine-muted">
+                                {{ __('Grab the latest minelog.mcpack from the') }}
+                                <a href="https://github.com/erikaheidi/minelog/releases/latest" target="_blank" rel="noopener" class="font-semibold text-mine-green-2 underline">{{ __('Releases page') }}</a>{{ __(' on GitHub. No tools required — just download the file.') }}
+                            </p>
+                            <p class="mt-2 text-sm text-mine-muted">{{ __('Prefer to build it yourself? Zip the contents of the addon/ directory so manifest.json sits at the zip root:') }}</p>
+                            <pre class="mt-3 overflow-x-auto rounded-lg border border-mine-line bg-mine-panel-2 p-3 text-sm"><code>cd addon &amp;&amp; zip -r ../minelog.mcpack . -x 'README.md' &amp;&amp; cd ..</code></pre>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">2</span>
+                        <div>
+                            <p class="font-semibold">{{ __('Import it into Minecraft') }}</p>
+                            <p class="mt-1 text-sm text-mine-muted">{{ __('Double-click minelog.mcpack (or open it with Minecraft). Bedrock imports it as an available behavior pack.') }}</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">3</span>
+                        <div>
+                            <p class="font-semibold">{{ __('Enable it on your world') }}</p>
+                            <p class="mt-1 text-sm text-mine-muted">{{ __('For a local world: Create/Edit World → Behavior Packs → activate Minelog Waypoints. For a Realm: Realm settings → World → Behavior Packs. If your version prompts for it, turn on the Scripting / Beta APIs experiment.') }}</p>
+                        </div>
+                    </li>
+                </ol>
+
+                <div class="mt-5 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
+                    <span class="font-semibold text-mine-text">{{ __('Requirements:') }}</span>
+                    {{ __('Minecraft Bedrock 1.21+. The add-on uses the @minecraft/server scripting API, which is Bedrock-only (it does not work on Java Edition).') }}
+                </div>
             </div>
-        </section>
 
-        {{-- Step 2 --}}
-        <section class="mt-16">
-            <h2 class="text-2xl font-bold tracking-tight">
-                <span class="text-mine-green-2">2.</span> {{ __('Save waypoints while you play') }}
-            </h2>
-            <p class="mt-3 text-mine-muted">
-                {{ __('Open the in-game chat and type a command. When you save, the add-on records your exact coordinates, the dimension you\'re in, and the label you gave it.') }}
-            </p>
+            {{-- 1b. Save waypoints while you play --}}
+            <div class="mt-10 border-l-2 border-mine-line pl-5 sm:pl-6">
+                <h3 class="text-lg font-bold tracking-tight">
+                    <span class="text-mine-green-2">1b.</span> {{ __('Save waypoints while you play') }}
+                </h3>
+                <p class="mt-3 text-mine-muted">
+                    {{ __('Open the in-game chat and type a command. When you save, the add-on records your exact coordinates, the dimension you\'re in, and the label you gave it.') }}
+                </p>
 
-            <div class="mt-6 overflow-x-auto rounded-xl border border-mine-line">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-mine-panel-2 text-mine-text">
-                        <tr>
-                            <th class="px-4 py-3 font-semibold">{{ __('Command') }}</th>
-                            <th class="px-4 py-3 font-semibold">{{ __('What it does') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-mine-line">
-                        @foreach ([
-                            ['!wp save <label>', __('Save your current position with a label.')],
-                            ['!wp list', __('List every saved waypoint with its number.')],
-                            ['!wp remove <n>', __('Remove waypoint number n (from !wp list).')],
-                            ['!wp export', __('Print the full log as JSON to copy into Minelog.')],
-                            ['!wp clear confirm', __('Delete all saved waypoints.')],
-                            ['!wp help', __('Show the list of commands.')],
-                        ] as [$cmd, $desc])
-                            <tr class="bg-mine-panel">
-                                <td class="whitespace-nowrap px-4 py-3 font-mono text-mine-green-2">{{ $cmd }}</td>
-                                <td class="px-4 py-3 text-mine-muted">{{ $desc }}</td>
+                <div class="mt-6 overflow-x-auto rounded-xl border border-mine-line">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-mine-panel-2 text-mine-text">
+                            <tr>
+                                <th class="px-4 py-3 font-semibold">{{ __('Command') }}</th>
+                                <th class="px-4 py-3 font-semibold">{{ __('What it does') }}</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-mine-line">
+                            @foreach ([
+                                ['!wp save <label>', __('Save your current position with a label.')],
+                                ['!wp list', __('List every saved waypoint with its number.')],
+                                ['!wp remove <n>', __('Remove waypoint number n (from !wp list).')],
+                                ['!wp export', __('Print the full log as JSON to copy into Minelog.')],
+                                ['!wp clear confirm', __('Delete all saved waypoints.')],
+                                ['!wp help', __('Show the list of commands.')],
+                            ] as [$cmd, $desc])
+                                <tr class="bg-mine-panel">
+                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-mine-green-2">{{ $cmd }}</td>
+                                    <td class="px-4 py-3 text-mine-muted">{{ $desc }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="mt-5 text-sm text-mine-muted">
+                    {{ __('Example: standing at your base, type') }}
+                    <code class="rounded bg-mine-panel-2 px-1.5 py-0.5 font-mono text-mine-text">!wp save Main base</code>
+                    {{ __('and Minelog confirms the saved coordinates in chat.') }}
+                </p>
             </div>
 
-            <p class="mt-5 text-sm text-mine-muted">
-                {{ __('Example: standing at your base, type') }}
-                <code class="rounded bg-mine-panel-2 px-1.5 py-0.5 font-mono text-mine-text">!wp save Main base</code>
-                {{ __('and Minelog confirms the saved coordinates in chat.') }}
-            </p>
+            {{-- 1c. Export the log from the game --}}
+            <div class="mt-10 border-l-2 border-mine-line pl-5 sm:pl-6">
+                <h3 class="text-lg font-bold tracking-tight">
+                    <span class="text-mine-green-2">1c.</span> {{ __('Export the log from the game') }}
+                </h3>
+                <p class="mt-3 text-mine-muted">
+                    {{ __('When you\'re ready to bring your waypoints into Minelog, run:') }}
+                </p>
+                <pre class="mt-3 overflow-x-auto rounded-lg border border-mine-line bg-mine-panel-2 p-3 text-sm"><code>!wp export</code></pre>
+                <p class="mt-3 text-mine-muted">
+                    {{ __('The add-on prints your whole log as a single JSON line in chat. Select and copy that line.') }}
+                </p>
+
+                <div class="mt-5 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
+                    <span class="font-semibold text-mine-text">{{ __('Playing on Switch or a console?') }}</span>
+                    {{ __('Some consoles can\'t copy chat text. Join the same Realm from a PC or phone Bedrock client (with the pack enabled), run !wp export there, and copy the line. Your waypoints live inside the world, so they\'re available from any device on that Realm.') }}
+                </div>
+
+                <div class="mt-4 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
+                    <span class="font-semibold text-mine-text">{{ __('A note on limits:') }}</span>
+                    {{ __('The log is stored in a single world property capped at about 250–270 waypoints. The add-on warns you in chat as you approach the limit — export and import into Minelog before it fills up.') }}
+                </div>
+            </div>
         </section>
 
-        {{-- Step 3 --}}
+        {{-- Step 2: Add waypoints in Minelog --}}
         <section class="mt-16">
             <h2 class="text-2xl font-bold tracking-tight">
-                <span class="text-mine-green-2">3.</span> {{ __('Export the log from the game') }}
-            </h2>
-            <p class="mt-3 text-mine-muted">
-                {{ __('When you\'re ready to bring your waypoints into Minelog, run:') }}
-            </p>
-            <pre class="mt-3 overflow-x-auto rounded-lg border border-mine-line bg-mine-panel-2 p-3 text-sm"><code>!wp export</code></pre>
-            <p class="mt-3 text-mine-muted">
-                {{ __('The add-on prints your whole log as a single JSON line in chat. Select and copy that line.') }}
-            </p>
-
-            <div class="mt-5 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
-                <span class="font-semibold text-mine-text">{{ __('Playing on Switch or a console?') }}</span>
-                {{ __('Some consoles can\'t copy chat text. Join the same Realm from a PC or phone Bedrock client (with the pack enabled), run !wp export there, and copy the line. Your waypoints live inside the world, so they\'re available from any device on that Realm.') }}
-            </div>
-
-            <div class="mt-4 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
-                <span class="font-semibold text-mine-text">{{ __('A note on limits:') }}</span>
-                {{ __('The log is stored in a single world property capped at about 250–270 waypoints. The add-on warns you in chat as you approach the limit — export and import into Minelog before it fills up.') }}
-            </div>
-        </section>
-
-        {{-- Step 4 --}}
-        <section class="mt-16">
-            <h2 class="text-2xl font-bold tracking-tight">
-                <span class="text-mine-green-2">4.</span> {{ __('Add waypoints in Minelog') }}
+                <span class="text-mine-green-2">2.</span> {{ __('Add waypoints in Minelog') }}
             </h2>
             <ol class="mt-6 space-y-5">
                 <li class="flex gap-4">

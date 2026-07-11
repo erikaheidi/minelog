@@ -65,7 +65,7 @@
         <x-world-tabs :world="$world" active="log" :public="true" />
 
         {{-- Gallery --}}
-        <section>
+        <section x-data="{ open: false, wp: null }" @keydown.escape.window="open = false">
             <h2 class="mb-4 text-2xl font-bold tracking-tight">{{ __('Waypoints') }}</h2>
             @if ($waypoints->isEmpty())
                 <div class="rounded-xl border border-dashed border-mine-line py-16 text-center text-mine-muted">
@@ -74,12 +74,33 @@
             @else
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($waypoints as $wp)
-                        <div class="flex flex-col overflow-hidden rounded-2xl border border-mine-line bg-mine-panel shadow-sm">
+                        @php
+                            $wpData = [
+                                'name' => $wp->name ?: __('Unnamed waypoint'),
+                                'coords' => $wp->coordString(),
+                                'dimension' => ucfirst($wp->dimension),
+                                'color' => $wp->dimensionColor(),
+                                'note' => $wp->note,
+                                'tags' => $wp->tags ?? [],
+                                'shots' => $wp->screenshots->map(fn ($s) => $s->url())->all(),
+                            ];
+                        @endphp
+                        <div
+                            role="button"
+                            tabindex="0"
+                            @click="wp = @js($wpData); open = true"
+                            @keydown.enter="wp = @js($wpData); open = true"
+                            @keydown.space.prevent="wp = @js($wpData); open = true"
+                            class="flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-mine-line bg-mine-panel shadow-sm transition hover:border-mine-muted hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-mine-muted"
+                        >
                             {{-- Screenshot, or a dimension-tinted placeholder header --}}
-                            @if ($wp->screenshot_path)
+                            @if ($wp->screenshots->isNotEmpty())
                                 <div class="relative aspect-video w-full">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($wp->screenshot_path) }}" alt="" class="h-full w-full object-cover" />
+                                    <img src="{{ $wp->screenshots->first()->url() }}" alt="" class="h-full w-full object-cover" />
                                     <span class="absolute left-3 top-3 rounded-full px-2 py-0.5 text-xs font-semibold text-white" style="background: {{ $wp->dimensionColor() }}">{{ ucfirst($wp->dimension) }}</span>
+                                    @if ($wp->screenshots->count() > 1)
+                                        <span class="absolute right-3 top-3 rounded-full bg-black/60 px-2 py-0.5 text-xs font-semibold text-white">{{ $wp->screenshots->count() }} {{ __('shots') }}</span>
+                                    @endif
                                 </div>
                             @else
                                 <div class="relative flex aspect-video w-full items-center justify-center" style="background: linear-gradient(135deg, {{ $wp->dimensionColor() }}55, #0c0f1266);">
@@ -91,7 +112,7 @@
                                 <h3 class="font-bold">{{ $wp->name ?: __('Unnamed waypoint') }}</h3>
                                 <div class="font-mono text-sm text-mine-muted">{{ $wp->coordString() }}</div>
                                 @if ($wp->note)
-                                    <p class="text-sm text-mine-muted">{{ $wp->note }}</p>
+                                    <p class="text-sm text-mine-muted">{{ Str::limit($wp->note, 100) }}</p>
                                 @endif
                                 @if (! empty($wp->tags))
                                     <div class="mt-1 flex flex-wrap gap-1.5">
@@ -105,6 +126,61 @@
                     @endforeach
                 </div>
             @endif
+
+            {{-- Waypoint detail modal --}}
+            <div
+                x-show="open"
+                x-cloak
+                @click.self="open = false"
+                class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm sm:items-center"
+                style="display: none;"
+            >
+                <template x-if="wp">
+                    <div class="relative my-8 w-full max-w-2xl overflow-hidden rounded-2xl border border-mine-line bg-mine-panel shadow-xl" @click.stop>
+                        <button
+                            type="button"
+                            @click="open = false"
+                            class="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-lg text-white transition hover:bg-black/70"
+                            aria-label="{{ __('Close') }}"
+                        >&times;</button>
+
+                        <div class="max-h-[85vh] overflow-y-auto">
+                            {{-- Header --}}
+                            <div class="flex flex-col gap-3 p-6">
+                                <div class="flex items-center gap-2">
+                                    <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold text-white" :style="'background: ' + wp.color" x-text="wp.dimension"></span>
+                                    <span class="font-mono text-sm text-mine-muted" x-text="wp.coords"></span>
+                                </div>
+                                <h3 class="text-2xl font-bold tracking-tight" x-text="wp.name"></h3>
+                                <p class="text-mine-muted" x-show="wp.note" x-text="wp.note"></p>
+                                <div class="flex flex-wrap gap-1.5" x-show="wp.tags.length">
+                                    <template x-for="tag in wp.tags" :key="tag">
+                                        <span class="rounded-full bg-mine-panel-2 px-2 py-0.5 text-xs text-mine-muted" x-text="tag"></span>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Screenshots --}}
+                            <div class="flex flex-col gap-3 px-6 pb-6" x-show="wp.shots.length">
+                                <h4 class="text-sm font-semibold uppercase tracking-wide text-mine-muted">
+                                    {{ __('Screenshots') }} (<span x-text="wp.shots.length"></span>)
+                                </h4>
+                                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <template x-for="(url, i) in wp.shots" :key="i">
+                                        <a :href="url" target="_blank" rel="noopener" class="block overflow-hidden rounded-xl border border-mine-line">
+                                            <img :src="url" alt="" class="aspect-video w-full object-cover transition hover:scale-[1.02]" />
+                                        </a>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div class="px-6 pb-6 text-sm text-mine-muted" x-show="! wp.shots.length">
+                                {{ __('No screenshots for this waypoint yet.') }}
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
         </section>
     </div>
 </x-layouts.public>

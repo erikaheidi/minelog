@@ -15,7 +15,7 @@ class WorldController extends Controller
 
         return view('worlds.public', [
             'world' => $world,
-            'waypoints' => $world->waypoints()->latest()->get(),
+            'waypoints' => $world->waypoints()->with('screenshots')->latest()->get(),
         ]);
     }
 

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Str;
 
 /**
@@ -72,6 +72,23 @@ class World extends Model
     }
 
     /**
+     * A representative screenshot for the world, taken from its waypoints.
+     *
+     * @return HasOneThrough<WaypointScreenshot, Waypoint, $this>
+     */
+    public function coverScreenshot(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            WaypointScreenshot::class,
+            Waypoint::class,
+            'world_id',
+            'waypoint_id',
+            'id',
+            'id',
+        );
+    }
+
+    /**
      * @param  Builder<World>  $query
      */
     #[Scope]
@@ -108,6 +125,7 @@ class World extends Model
             $this->waypoints()
                 ->whereNotNull('x')
                 ->whereNotNull('z')
+                ->with('screenshots')
                 ->get()
                 ->map(fn (Waypoint $w): array => [
                     'name' => $w->name ?: 'Unnamed',
@@ -117,7 +135,7 @@ class World extends Model
                     'dimension' => $w->dimension,
                     'color' => $w->dimensionColor(),
                     'note' => $w->note,
-                    'shot' => $w->screenshot_path ? Storage::url($w->screenshot_path) : null,
+                    'shot' => $w->screenshots->first()?->url(),
                 ])
                 ->all()
         );

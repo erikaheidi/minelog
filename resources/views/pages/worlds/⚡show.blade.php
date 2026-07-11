@@ -4,12 +4,14 @@ use App\Models\Waypoint;
 use App\Models\World;
 use App\Services\WaypointImporter;
 use Flux\Flux;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 new #[Title('World')] class extends Component {
+    use WithFileUploads;
+
     public World $world;
 
     // Import + filters
@@ -44,6 +46,9 @@ new #[Title('World')] class extends Component {
     public string $tags = '';
 
     public string $note = '';
+
+    /** @var list<\Livewire\Features\SupportFileUploads\TemporaryUploadedFile> */
+    public array $newScreenshots = [];
 
     // Add-waypoint form
     public string $newName = '';
@@ -135,6 +140,7 @@ new #[Title('World')] class extends Component {
     public function waypoints()
     {
         return $this->world->waypoints()
+            ->with('screenshots')
             ->when($this->q !== '', function ($query) {
                 $search = trim($this->q);
                 $query->where(fn ($q) => $q
@@ -146,11 +152,25 @@ new #[Title('World')] class extends Component {
             ->get();
     }
 
+    /**
+     * @return \Illuminate\Support\Collection<int, \App\Models\WaypointScreenshot>
+     */
+    #[Computed]
+    public function editingScreenshots()
+    {
+        if ($this->editingId === null) {
+            return collect();
+        }
+
+        return $this->world->waypoints()->find($this->editingId)?->screenshots()->get() ?? collect();
+    }
+
     public function startEdit(int $id): void
     {
         $waypoint = $this->world->waypoints()->findOrFail($id);
         $this->authorize('update', $waypoint);
 
+        $this->reset('newScreenshots');
         $this->editingId = $waypoint->id;
         $this->name = $waypoint->name ?? '';
         $this->x = $waypoint->x;
@@ -176,6 +196,8 @@ new #[Title('World')] class extends Component {
             'editDimension' => ['required', 'in:'.implode(',', Waypoint::DIMENSIONS)],
             'note' => ['nullable', 'string', 'max:2000'],
             'tags' => ['nullable', 'string', 'max:255'],
+            'newScreenshots' => ['nullable', 'array', 'max:6'],
+            'newScreenshots.*' => ['image', 'max:5120'],
         ]);
 
         $tags = collect(explode(',', $validated['tags'] ?? ''))
@@ -195,8 +217,35 @@ new #[Title('World')] class extends Component {
             'status' => 'confirmed',
         ]);
 
+        $disk = config('filesystems.default');
+
+        foreach ($this->newScreenshots as $screenshot) {
+            $path = $screenshot->store('screenshots/'.$waypoint->id, $disk);
+
+            $waypoint->screenshots()->create([
+                'disk' => $disk,
+                'path' => $path,
+            ]);
+        }
+
+        $this->reset('newScreenshots');
+
         Flux::modal('edit-waypoint')->close();
         Flux::toast(variant: 'success', text: __('Waypoint saved.'));
+    }
+
+    public function deleteScreenshot(int $screenshotId): void
+    {
+        $waypoint = $this->world->waypoints()->findOrFail($this->editingId);
+        $this->authorize('update', $waypoint);
+
+        $screenshot = $waypoint->screenshots()->findOrFail($screenshotId);
+        $screenshot->deleteFile();
+        $screenshot->delete();
+
+        unset($this->editingScreenshots);
+
+        Flux::toast(variant: 'success', text: __('Screenshot removed.'));
     }
 
     public function delete(int $id): void
@@ -204,8 +253,8 @@ new #[Title('World')] class extends Component {
         $waypoint = $this->world->waypoints()->findOrFail($id);
         $this->authorize('delete', $waypoint);
 
-        if ($waypoint->screenshot_path) {
-            Storage::disk('public')->delete($waypoint->screenshot_path);
+        foreach ($waypoint->screenshots as $screenshot) {
+            $screenshot->deleteFile();
         }
 
         $waypoint->delete();
@@ -306,8 +355,13 @@ new #[Title('World')] class extends Component {
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($this->waypoints as $wp)
                 <flux:card class="flex flex-col gap-3" wire:key="wp-{{ $wp->id }}">
-                    @if ($wp->screenshot_path)
-                        <img src="{{ Storage::url($wp->screenshot_path) }}" alt="" class="aspect-video w-full rounded-lg object-cover" />
+                    @if ($wp->screenshots->isNotEmpty())
+                        <div class="relative">
+                            <img src="{{ $wp->screenshots->first()->url() }}" alt="" class="aspect-video w-full rounded-lg object-cover" />
+                            @if ($wp->screenshots->count() > 1)
+                                <flux:badge size="sm" class="absolute right-2 top-2" icon="photo">{{ $wp->screenshots->count() }}</flux:badge>
+                            @endif
+                        </div>
                     @endif
 
                     <div class="flex items-start justify-between gap-2">
@@ -388,6 +442,41 @@ new #[Title('World')] class extends Component {
 
             <flux:input wire:model="tags" :label="__('Tags')" :placeholder="__('base, mineshaft, loot')" />
             <flux:textarea wire:model="note" :label="__('Note')" rows="3" />
+
+            {{-- Screenshots --}}
+            <div class="flex flex-col gap-3">
+                <flux:heading size="sm">{{ __('Screenshots') }}</flux:heading>
+
+                @if ($this->editingScreenshots->isNotEmpty())
+                    <div class="grid grid-cols-3 gap-2">
+                        @foreach ($this->editingScreenshots as $shot)
+                            <div class="group relative" wire:key="shot-{{ $shot->id }}">
+                                <img src="{{ $shot->url() }}" alt="" class="aspect-video w-full rounded-lg object-cover" />
+                                <flux:button
+                                    size="xs"
+                                    variant="danger"
+                                    icon="trash"
+                                    class="absolute right-1 top-1"
+                                    wire:click="deleteScreenshot({{ $shot->id }})"
+                                    wire:confirm="{{ __('Remove this screenshot?') }}"
+                                />
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <flux:input
+                    type="file"
+                    wire:model="newScreenshots"
+                    multiple
+                    accept="image/*"
+                    :label="__('Add screenshots')"
+                    :description="__('PNG, JPG or WebP up to 5 MB each.')"
+                />
+                <div wire:loading wire:target="newScreenshots">
+                    <flux:text class="text-sm text-zinc-500">{{ __('Uploading…') }}</flux:text>
+                </div>
+            </div>
 
             <div class="flex gap-2">
                 <flux:button type="submit" variant="primary">{{ __('Save waypoint') }}</flux:button>
