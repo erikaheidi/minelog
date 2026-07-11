@@ -1,0 +1,30 @@
+{
+    "format_version": 2,
+    "header": {
+        "name": "Minelog Waypoints",
+        "description": "Save your exact position with a label using !wp commands. Export the log as JSON to import into Minelog.",
+        "uuid": "15584113-6ebb-4e53-b4f6-4fc0d310c1f0",
+        "version": [1, 0, 0],
+        "min_engine_version": [1, 21, 0]
+    },
+    "modules": [
+        {
+            "type": "data",
+            "uuid": "0c43b150-c452-4b0c-bf16-69ecbb9b62ef",
+            "version": [1, 0, 0]
+        },
+        {
+            "type": "script",
+            "language": "javascript",
+            "entry": "scripts/main.js",
+            "uuid": "84310955-bc48-4b0b-b8b1-508d4d22be97",
+            "version": [1, 0, 0]
+        }
+    ],
+    "dependencies": [
+        {
+            "module_name": "@minecraft/server",
+            "version": "2.0.0"
+        }
+    ]
+}
