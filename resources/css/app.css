@@ -23,16 +23,29 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+    /* Minelog palette (from the original POC) */
+    --color-mine-bg: #14181d;
+    --color-mine-panel: #1e242b;
+    --color-mine-panel-2: #262d36;
+    --color-mine-line: #333c47;
+    --color-mine-text: #e7ecf1;
+    --color-mine-muted: #93a0ad;
+    --color-mine-green: #4a8c3f;
+    --color-mine-green-2: #5ea84f;
+    --color-mine-nether: #b3312c;
+    --color-mine-end: #7b6ca8;
+
+    /* Flux accent = Minelog green, so primary buttons / focus rings match the theme */
+    --color-accent: #4a8c3f;
+    --color-accent-content: #5ea84f;
+    --color-accent-foreground: #ffffff;
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent: #4a8c3f;
+        --color-accent-content: #6fbf5f;
+        --color-accent-foreground: #ffffff;
     }
 }
 

@@ -85,4 +85,13 @@ test('the owner can load the worlds index and a world workspace', function () {
 
     $this->get(route('worlds.index'))->assertOk();
     $this->get(route('worlds.show', $world))->assertOk()->assertSee('Survival Realm');
+    $this->get(route('worlds.map', $world))->assertOk();
+});
+
+test('a non-owner cannot open the world map', function () {
+    $world = World::factory()->create();
+
+    $this->actingAs(User::factory()->create());
+
+    $this->get(route('worlds.map', $world))->assertForbidden();
 });

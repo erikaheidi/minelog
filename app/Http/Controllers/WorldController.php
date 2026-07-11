@@ -16,6 +16,17 @@ class WorldController extends Controller
         return view('worlds.public', [
             'world' => $world,
             'waypoints' => $world->waypoints()->latest()->get(),
+        ]);
+    }
+
+    public function map(World $world): View
+    {
+        abort_unless($world->is_public, 404);
+
+        $world->load('user');
+
+        return view('worlds.public-map', [
+            'world' => $world,
             'markers' => $world->mapMarkers(),
         ]);
     }

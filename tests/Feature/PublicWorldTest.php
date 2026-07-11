@@ -25,6 +25,15 @@ test('a private world returns 404 to guests', function () {
     $this->get(route('worlds.public', $world))->assertNotFound();
 });
 
+test('a guest can view the public world map, private map is 404', function () {
+    $public = World::factory()->public()->create();
+    Waypoint::factory()->for($public)->create();
+    $private = World::factory()->create(['is_public' => false]);
+
+    $this->get(route('worlds.public.map', $public))->assertOk()->assertSee('leaflet', false);
+    $this->get(route('worlds.public.map', $private))->assertNotFound();
+});
+
 test('the landing lists public worlds and excludes private ones', function () {
     World::factory()->public()->create(['name' => 'Public Explorer']);
     World::factory()->create(['name' => 'Secret Base', 'is_public' => false]);

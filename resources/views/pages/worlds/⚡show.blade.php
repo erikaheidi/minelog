@@ -112,15 +112,6 @@ new #[Title('World')] class extends Component {
             ->get();
     }
 
-    /**
-     * @return list<array<string, mixed>>
-     */
-    #[Computed]
-    public function markers(): array
-    {
-        return $this->world->mapMarkers();
-    }
-
     public function startEdit(int $id): void
     {
         $waypoint = $this->world->waypoints()->findOrFail($id);
@@ -190,13 +181,6 @@ new #[Title('World')] class extends Component {
 }; ?>
 
 <div class="flex h-full w-full flex-1 flex-col gap-6">
-    @assets
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-                integrity="sha256-20nQCchB9co0qIjJ0jv_A3q6AZ7X/3lVN5nMZmYUx4=" crossorigin=""></script>
-    @endassets
-
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
             <flux:text class="text-sm"><a href="{{ route('worlds.index') }}" wire:navigate class="text-zinc-500 hover:underline">← {{ __('My Worlds') }}</a></flux:text>
@@ -220,6 +204,8 @@ new #[Title('World')] class extends Component {
         </div>
     </div>
 
+    <x-world-tabs :world="$world" active="log" />
+
     {{-- Import panel --}}
     <flux:card>
         <form wire:submit="import" class="flex flex-col gap-4">
@@ -234,11 +220,6 @@ new #[Title('World')] class extends Component {
             </div>
         </form>
     </flux:card>
-
-    {{-- Map --}}
-    @if (! empty($this->markers))
-        <x-waypoint-map :markers="$this->markers" class="h-[52vh] min-h-[360px]" />
-    @endif
 
     {{-- Filters --}}
     <div class="flex flex-wrap items-end gap-3">
