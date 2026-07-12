@@ -18,7 +18,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::redirect('dashboard', 'worlds')->name('dashboard');
 
     Route::livewire('worlds', 'pages::worlds.index')->name('worlds.index');
     Route::livewire('worlds/{world}', 'pages::worlds.show')->name('worlds.show');
