@@ -14,7 +14,7 @@ beforeEach(function () {
     Storage::fake('public');
 });
 
-test('a user can attach multiple screenshots to a waypoint when editing it', function () {
+test('a user can attach multiple screenshots to a waypoint one at a time', function () {
     $user = User::factory()->create();
     $world = World::factory()->for($user)->create();
     $wp = Waypoint::factory()->for($world)->create();
@@ -23,13 +23,12 @@ test('a user can attach multiple screenshots to a waypoint when editing it', fun
 
     Livewire::test('pages::worlds.show', ['world' => $world])
         ->call('startEdit', $wp->id)
-        ->set('newScreenshots', [
-            UploadedFile::fake()->create('a.png', 100, 'image/png'),
-            UploadedFile::fake()->create('b.png', 100, 'image/png'),
-        ])
-        ->call('saveEdit')
+        ->set('newScreenshot', UploadedFile::fake()->create('a.png', 100, 'image/png'))
         ->assertHasNoErrors()
-        ->assertSet('newScreenshots', []);
+        ->assertSet('newScreenshot', null)
+        ->set('newScreenshot', UploadedFile::fake()->create('b.png', 100, 'image/png'))
+        ->assertHasNoErrors()
+        ->assertSet('newScreenshot', null);
 
     expect($wp->screenshots()->count())->toBe(2);
 
@@ -37,6 +36,23 @@ test('a user can attach multiple screenshots to a waypoint when editing it', fun
         expect($shot->disk)->toBe('public');
         Storage::disk('public')->assertExists($shot->path);
     });
+});
+
+test('a waypoint accepts at most six screenshots', function () {
+    $user = User::factory()->create();
+    $world = World::factory()->for($user)->create();
+    $wp = Waypoint::factory()->for($world)->create();
+    WaypointScreenshot::factory()->for($wp)->count(6)->create();
+
+    $this->actingAs($user);
+
+    Livewire::test('pages::worlds.show', ['world' => $world])
+        ->call('startEdit', $wp->id)
+        ->set('newScreenshot', UploadedFile::fake()->create('extra.png', 100, 'image/png'))
+        ->assertHasNoErrors()
+        ->assertSet('newScreenshot', null);
+
+    expect($wp->screenshots()->count())->toBe(6);
 });
 
 test('deleting a single screenshot removes the row and the file', function () {
@@ -48,8 +64,7 @@ test('deleting a single screenshot removes the row and the file', function () {
 
     Livewire::test('pages::worlds.show', ['world' => $world])
         ->call('startEdit', $wp->id)
-        ->set('newScreenshots', [UploadedFile::fake()->create('a.png', 100, 'image/png')])
-        ->call('saveEdit')
+        ->set('newScreenshot', UploadedFile::fake()->create('a.png', 100, 'image/png'))
         ->assertHasNoErrors();
 
     $shot = $wp->screenshots()->firstOrFail();
@@ -72,11 +87,9 @@ test('deleting a waypoint removes all of its screenshot files', function () {
 
     Livewire::test('pages::worlds.show', ['world' => $world])
         ->call('startEdit', $wp->id)
-        ->set('newScreenshots', [
-            UploadedFile::fake()->create('a.png', 100, 'image/png'),
-            UploadedFile::fake()->create('b.png', 100, 'image/png'),
-        ])
-        ->call('saveEdit')
+        ->set('newScreenshot', UploadedFile::fake()->create('a.png', 100, 'image/png'))
+        ->assertHasNoErrors()
+        ->set('newScreenshot', UploadedFile::fake()->create('b.png', 100, 'image/png'))
         ->assertHasNoErrors();
 
     $paths = $wp->screenshots->pluck('path');
@@ -98,9 +111,8 @@ test('screenshot uploads are validated as images under the size limit', function
 
     Livewire::test('pages::worlds.show', ['world' => $world])
         ->call('startEdit', $wp->id)
-        ->set('newScreenshots', [UploadedFile::fake()->create('notes.pdf', 200, 'application/pdf')])
-        ->call('saveEdit')
-        ->assertHasErrors(['newScreenshots.0']);
+        ->set('newScreenshot', UploadedFile::fake()->create('notes.pdf', 200, 'application/pdf'))
+        ->assertHasErrors(['newScreenshot']);
 
     expect($wp->screenshots()->count())->toBe(0);
 });

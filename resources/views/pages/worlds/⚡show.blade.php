@@ -47,8 +47,7 @@ new #[Title('World')] class extends Component {
 
     public string $note = '';
 
-    /** @var list<\Livewire\Features\SupportFileUploads\TemporaryUploadedFile> */
-    public array $newScreenshots = [];
+    public ?\Livewire\Features\SupportFileUploads\TemporaryUploadedFile $newScreenshot = null;
 
     // Add-waypoint form
     public string $newName = '';
@@ -170,7 +169,7 @@ new #[Title('World')] class extends Component {
         $waypoint = $this->world->waypoints()->findOrFail($id);
         $this->authorize('update', $waypoint);
 
-        $this->reset('newScreenshots');
+        $this->reset('newScreenshot');
         $this->editingId = $waypoint->id;
         $this->name = $waypoint->name ?? '';
         $this->x = $waypoint->x;
@@ -181,6 +180,35 @@ new #[Title('World')] class extends Component {
         $this->note = $waypoint->note ?? '';
 
         Flux::modal('edit-waypoint')->show();
+    }
+
+    public function updatedNewScreenshot(): void
+    {
+        $waypoint = $this->world->waypoints()->findOrFail($this->editingId);
+        $this->authorize('update', $waypoint);
+
+        $this->validate([
+            'newScreenshot' => ['required', 'image', 'max:5120'],
+        ]);
+
+        if ($waypoint->screenshots()->count() >= 6) {
+            $this->reset('newScreenshot');
+
+            Flux::toast(variant: 'warning', text: __('You can add up to 6 screenshots per waypoint.'));
+
+            return;
+        }
+
+        $disk = config('filesystems.default');
+        $path = $this->newScreenshot->store('screenshots/'.$waypoint->id, $disk);
+
+        $waypoint->screenshots()->create([
+            'disk' => $disk,
+            'path' => $path,
+        ]);
+
+        $this->reset('newScreenshot');
+        unset($this->editingScreenshots);
     }
 
     public function saveEdit(): void
@@ -196,8 +224,6 @@ new #[Title('World')] class extends Component {
             'editDimension' => ['required', 'in:'.implode(',', Waypoint::DIMENSIONS)],
             'note' => ['nullable', 'string', 'max:2000'],
             'tags' => ['nullable', 'string', 'max:255'],
-            'newScreenshots' => ['nullable', 'array', 'max:6'],
-            'newScreenshots.*' => ['image', 'max:5120'],
         ]);
 
         $tags = collect(explode(',', $validated['tags'] ?? ''))
@@ -216,19 +242,6 @@ new #[Title('World')] class extends Component {
             'tags' => $tags,
             'status' => 'confirmed',
         ]);
-
-        $disk = config('filesystems.default');
-
-        foreach ($this->newScreenshots as $screenshot) {
-            $path = $screenshot->store('screenshots/'.$waypoint->id, $disk);
-
-            $waypoint->screenshots()->create([
-                'disk' => $disk,
-                'path' => $path,
-            ]);
-        }
-
-        $this->reset('newScreenshots');
 
         Flux::modal('edit-waypoint')->close();
         Flux::toast(variant: 'success', text: __('Waypoint saved.'));
@@ -467,13 +480,12 @@ new #[Title('World')] class extends Component {
 
                 <flux:input
                     type="file"
-                    wire:model="newScreenshots"
-                    multiple
+                    wire:model="newScreenshot"
                     accept="image/*"
-                    :label="__('Add screenshots')"
-                    :description="__('PNG, JPG or WebP up to 5 MB each.')"
+                    :label="__('Add a screenshot')"
+                    :description="__('PNG, JPG or WebP up to 5 MB. Add them one at a time.')"
                 />
-                <div wire:loading wire:target="newScreenshots">
+                <div wire:loading wire:target="newScreenshot">
                     <flux:text class="text-sm text-zinc-500">{{ __('Uploading…') }}</flux:text>
                 </div>
             </div>
