@@ -324,7 +324,7 @@ new #[Title('World')] class extends Component {
                     <flux:textarea
                         wire:model="payload"
                         :label="__('Paste export JSON')"
-                        :placeholder="__('Paste the JSON line printed by !wp export')"
+                        :placeholder="__('Paste the JSON line printed by /wp:export')"
                         rows="4"
                     />
                     <div>
@@ -349,7 +349,7 @@ new #[Title('World')] class extends Component {
     {{-- Grid --}}
     @if ($this->waypoints->isEmpty())
         <flux:card class="text-center">
-            <flux:subheading>{{ __('No waypoints yet. Save some in-game with !wp save <label>, then export and paste above.') }}</flux:subheading>
+            <flux:subheading>{{ __('No waypoints yet. Save some in-game with /wp:save "<label>", then export and paste above.') }}</flux:subheading>
         </flux:card>
     @else
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

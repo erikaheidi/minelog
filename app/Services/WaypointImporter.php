@@ -22,7 +22,7 @@ class WaypointImporter
     ];
 
     /**
-     * Import a JSON export (from the in-game `!wp export` command) into a world.
+     * Import a JSON export (from the in-game `/wp:export` command) into a world.
      *
      * Waypoints are upserted by their in-game id (scoped to the world), so
      * re-importing the same export updates existing rows instead of duplicating.
@@ -37,7 +37,7 @@ class WaypointImporter
 
         if (! is_array($decoded) || ! array_is_list($decoded)) {
             throw ValidationException::withMessages([
-                'payload' => 'That does not look like a Minelog export. Paste the JSON line printed by "!wp export".',
+                'payload' => 'That does not look like a Minelog export. Paste the JSON line printed by "/wp:export".',
             ]);
         }
 

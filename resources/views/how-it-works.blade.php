@@ -24,7 +24,7 @@
         {{-- Overview --}}
         <section class="mt-10 grid gap-4 sm:grid-cols-2">
             @foreach ([
-                ['1', __('Capture in-game (optional)'), __('Install the Bedrock add-on, save positions with !wp commands, and export your log as a line of JSON.')],
+                ['1', __('Capture in-game (optional)'), __('Install the Bedrock add-on, save positions with /wp: commands, and export your log as a line of JSON.')],
                 ['2', __('Add & share in Minelog'), __('Add waypoints by hand or paste the export, enrich them with notes and screenshots, then map and share.')],
             ] as [$n, $heading, $body])
                 <div class="rounded-xl border border-mine-line bg-mine-panel p-5">
@@ -104,12 +104,12 @@
                         </thead>
                         <tbody class="divide-y divide-mine-line">
                             @foreach ([
-                                ['!wp save <label>', __('Save your current position with a label.')],
-                                ['!wp list', __('List every saved waypoint with its number.')],
-                                ['!wp remove <n>', __('Remove waypoint number n (from !wp list).')],
-                                ['!wp export', __('Print the full log as JSON to copy into Minelog.')],
-                                ['!wp clear confirm', __('Delete all saved waypoints.')],
-                                ['!wp help', __('Show the list of commands.')],
+                                ['/wp:save "<label>"', __('Save your current position with a label.')],
+                                ['/wp:list', __('List every saved waypoint with its number.')],
+                                ['/wp:remove <n>', __('Remove waypoint number n (from /wp:list).')],
+                                ['/wp:export', __('Print the full log as JSON to copy into Minelog.')],
+                                ['/wp:clear true', __('Delete all saved waypoints.')],
+                                ['/wp:help', __('Show the list of commands.')],
                             ] as [$cmd, $desc])
                                 <tr class="bg-mine-panel">
                                     <td class="whitespace-nowrap px-4 py-3 font-mono text-mine-green-2">{{ $cmd }}</td>
@@ -122,7 +122,7 @@
 
                 <p class="mt-5 text-sm text-mine-muted">
                     {{ __('Example: standing at your base, type') }}
-                    <code class="rounded bg-mine-panel-2 px-1.5 py-0.5 font-mono text-mine-text">!wp save Main base</code>
+                    <code class="rounded bg-mine-panel-2 px-1.5 py-0.5 font-mono text-mine-text">/wp:save "Main base"</code>
                     {{ __('and Minelog confirms the saved coordinates in chat.') }}
                 </p>
             </div>
@@ -135,14 +135,14 @@
                 <p class="mt-3 text-mine-muted">
                     {{ __('When you\'re ready to bring your waypoints into Minelog, run:') }}
                 </p>
-                <pre class="mt-3 overflow-x-auto rounded-lg border border-mine-line bg-mine-panel-2 p-3 text-sm"><code>!wp export</code></pre>
+                <pre class="mt-3 overflow-x-auto rounded-lg border border-mine-line bg-mine-panel-2 p-3 text-sm"><code>/wp:export</code></pre>
                 <p class="mt-3 text-mine-muted">
                     {{ __('The add-on prints your whole log as a single JSON line in chat. Select and copy that line.') }}
                 </p>
 
                 <div class="mt-5 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
                     <span class="font-semibold text-mine-text">{{ __('Playing on Switch or a console?') }}</span>
-                    {{ __('Some consoles can\'t copy chat text. Join the same Realm from a PC or phone Bedrock client (with the pack enabled), run !wp export there, and copy the line. Your waypoints live inside the world, so they\'re available from any device on that Realm.') }}
+                    {{ __('Some consoles can\'t copy chat text. Join the same Realm from a PC or phone Bedrock client (with the pack enabled), run /wp:export there, and copy the line. Your waypoints live inside the world, so they\'re available from any device on that Realm.') }}
                 </div>
 
                 <div class="mt-4 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">

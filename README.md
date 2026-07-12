@@ -22,12 +22,12 @@ The add-on exists because Minecraft Bedrock add-ons running on Realms and regula
 behavior pack captures your positions in-game and you move them into the web app by
 copy-pasting a single line of JSON. With the add-on, the loop looks like this:
 
-1. **Save in-game.** With the *Minelog Waypoints* behavior pack enabled on your world, type
-   `!wp save <label>` in chat to record your exact position (x, y, z + dimension) under a label.
+1. **Save in-game.** With the *Minelog Waypoints* behavior pack enabled on your world, run
+   `/wp:save "<label>"` to record your exact position (x, y, z + dimension) under a label.
    The add-on keeps everything in a world dynamic property, so waypoints survive restarts and
    work on Realms.
 
-2. **Export.** Run `!wp export` and the add-on prints your whole log as a single JSON line in
+2. **Export.** Run `/wp:export` and the add-on prints your whole log as a single JSON line in
    chat. (Because the Switch and some consoles can't copy chat text, you can join the same Realm
    from a PC or phone client to run the export and copy it.)
 
