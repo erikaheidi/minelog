@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/how-it-works', 'how-it-works')->name('how-it-works');
+Route::view('/privacy-policy', 'privacy-policy')->name('privacy-policy');
+Route::view('/terms-of-service', 'terms-of-service')->name('terms-of-service');
 Route::get('/w/{world:slug}', [WorldController::class, 'show'])->name('worlds.public');
 Route::get('/w/{world:slug}/map', [WorldController::class, 'map'])->name('worlds.public.map');
 

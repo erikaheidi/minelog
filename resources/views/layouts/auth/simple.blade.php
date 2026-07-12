@@ -24,6 +24,8 @@
             </flux:toast.group>
         @endpersist
 
+        @include('partials.analytics')
+
         @fluxScripts
     </body>
 </html>

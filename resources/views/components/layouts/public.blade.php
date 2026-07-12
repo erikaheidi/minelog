@@ -48,9 +48,16 @@
 
         <footer class="mt-16 border-t border-mine-line py-10 text-center text-sm text-mine-muted">
             <div class="mx-auto max-w-6xl px-4 sm:px-6">
-                {{ __('Minelog — a travel log for your Minecraft worlds.') }}
+                <p>{{ __('Minelog — a travel log for your Minecraft worlds.') }}</p>
+                <nav class="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+                    <a href="{{ route('how-it-works') }}" class="font-semibold transition hover:text-mine-text">{{ __('How it Works') }}</a>
+                    <a href="{{ route('privacy-policy') }}" class="font-semibold transition hover:text-mine-text">{{ __('Privacy Policy') }}</a>
+                    <a href="{{ route('terms-of-service') }}" class="font-semibold transition hover:text-mine-text">{{ __('Terms of Service') }}</a>
+                </nav>
             </div>
         </footer>
+
+        @include('partials.analytics')
 
         @fluxScripts
     </body>
