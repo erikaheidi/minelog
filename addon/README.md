@@ -20,7 +20,7 @@ Bedrock with **no experiments** and can be run by any player (no operator/cheats
 
 ## Installing
 
-The easiest option is to **download the latest `minelog.mcpack` from the
+The easiest option is to **download the latest `minelog-<version>.mcpack` from the
 [Releases page](https://github.com/erikaheidi/minelog/releases/latest)** and double-click it —
 Minecraft imports it automatically (no tools needed, ideal on Windows).
 
