@@ -42,7 +42,11 @@ test('a guest can view the public world map, private map is 404', function () {
     Waypoint::factory()->for($public)->create();
     $private = World::factory()->create(['is_public' => false]);
 
-    $this->get(route('worlds.public.map', $public))->assertOk()->assertSee('leaflet', false);
+    $this->get(route('worlds.public.map', $public))
+        ->assertOk()
+        ->assertSee('leaflet', false)
+        ->assertSee('#e8d9b5', false)      // parchment backdrop
+        ->assertSee('makeGridLayer', false); // coordinate grid
     $this->get(route('worlds.public.map', $private))->assertNotFound();
 });
 
