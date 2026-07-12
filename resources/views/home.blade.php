@@ -1,4 +1,10 @@
-<x-layouts.public :title="__('Explore worlds')">
+<x-layouts.public
+    :title="__('Explore worlds')"
+    :description="__('Explore public Minecraft worlds on Minelog — browse waypoints, seeds and maps players have shared, or map your own.')"
+    :canonical="route('home')"
+    :imageWidth="1200"
+    :imageHeight="630"
+>
     {{-- Hero --}}
     <section class="relative overflow-hidden border-b border-mine-line">
         <div class="pointer-events-none absolute inset-0" style="background: linear-gradient(to bottom, rgba(94,168,79,0.14), transparent);"></div>

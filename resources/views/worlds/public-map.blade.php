@@ -2,7 +2,13 @@
     $dimColors = ['overworld' => '#4a8c3f', 'nether' => '#b3312c', 'end' => '#7b6ca8'];
 @endphp
 
-<x-layouts.public :title="$world->name.' · '.__('Map')">
+<x-layouts.public
+    :title="$world->name.' · '.__('Map')"
+    :description="$world->description ?: __('Explore the map of :name, a Minecraft world by :author on Minelog.', ['name' => $world->name, 'author' => $world->user->name])"
+    :image="$world->coverScreenshot?->url()"
+    :canonical="route('worlds.public.map', $world)"
+    type="article"
+>
     <section class="border-b border-mine-line">
         <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
             <a href="{{ route('home') }}" class="text-sm font-semibold text-mine-muted transition hover:text-mine-text">← {{ __('Explore') }}</a>

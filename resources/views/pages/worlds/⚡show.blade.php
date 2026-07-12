@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Waypoint;
+use App\Models\WaypointScreenshot;
 use App\Models\World;
 use App\Services\WaypointImporter;
 use Flux\Flux;
@@ -256,9 +257,36 @@ new #[Title('World')] class extends Component {
         $screenshot->deleteFile();
         $screenshot->delete();
 
+        // The DB nulls cover_screenshot_id via nullOnDelete; refresh the model so the UI reflects it.
+        $this->world->refresh();
+
         unset($this->editingScreenshots);
 
         Flux::toast(variant: 'success', text: __('Screenshot removed.'));
+    }
+
+    public function setCover(int $screenshotId): void
+    {
+        $this->authorize('update', $this->world);
+
+        // Ensure the screenshot belongs to one of this world's waypoints.
+        $screenshot = WaypointScreenshot::query()
+            ->where('id', $screenshotId)
+            ->whereHas('waypoint', fn ($query) => $query->where('world_id', $this->world->id))
+            ->firstOrFail();
+
+        $this->world->update(['cover_screenshot_id' => $screenshot->id]);
+
+        Flux::toast(variant: 'success', text: __('Cover image set.'));
+    }
+
+    public function clearCover(): void
+    {
+        $this->authorize('update', $this->world);
+
+        $this->world->update(['cover_screenshot_id' => null]);
+
+        Flux::toast(variant: 'success', text: __('Cover image removed.'));
     }
 
     public function delete(int $id): void
@@ -461,10 +489,31 @@ new #[Title('World')] class extends Component {
                 <flux:heading size="sm">{{ __('Screenshots') }}</flux:heading>
 
                 @if ($this->editingScreenshots->isNotEmpty())
+                    <flux:text class="text-sm text-zinc-500">{{ __('Set a screenshot as the world cover — it appears on the homepage and social share cards.') }}</flux:text>
                     <div class="grid grid-cols-3 gap-2">
                         @foreach ($this->editingScreenshots as $shot)
                             <div class="group relative" wire:key="shot-{{ $shot->id }}">
-                                <img src="{{ $shot->url() }}" alt="" class="aspect-video w-full rounded-lg object-cover" />
+                                <img src="{{ $shot->url() }}" alt="" class="aspect-video w-full rounded-lg object-cover {{ $world->cover_screenshot_id === $shot->id ? 'ring-2 ring-mine-green-2' : '' }}" />
+
+                                @if ($world->cover_screenshot_id === $shot->id)
+                                    <flux:badge size="sm" color="green" icon="star" class="absolute left-1 top-1">{{ __('Cover') }}</flux:badge>
+                                    <flux:button
+                                        size="xs"
+                                        variant="filled"
+                                        icon="star"
+                                        class="absolute bottom-1 left-1"
+                                        wire:click="clearCover"
+                                    >{{ __('Unset') }}</flux:button>
+                                @else
+                                    <flux:button
+                                        size="xs"
+                                        variant="filled"
+                                        icon="star"
+                                        class="absolute bottom-1 left-1"
+                                        wire:click="setCover({{ $shot->id }})"
+                                    >{{ __('Cover') }}</flux:button>
+                                @endif
+
                                 <flux:button
                                     size="xs"
                                     variant="danger"

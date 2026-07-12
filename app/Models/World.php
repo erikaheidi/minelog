@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Str;
 
 /**
@@ -19,6 +18,7 @@ use Illuminate\Support\Str;
  * @property string $slug
  * @property string|null $description
  * @property string|null $seed
+ * @property int|null $cover_screenshot_id
  * @property bool $is_public
  */
 class World extends Model
@@ -28,7 +28,7 @@ class World extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'name', 'slug', 'description', 'seed', 'is_public',
+        'name', 'slug', 'description', 'seed', 'cover_screenshot_id', 'is_public',
     ];
 
     /**
@@ -72,20 +72,14 @@ class World extends Model
     }
 
     /**
-     * A representative screenshot for the world, taken from its waypoints.
+     * The screenshot the owner has chosen to represent this world (used for
+     * cards and social sharing). Null until explicitly set.
      *
-     * @return HasOneThrough<WaypointScreenshot, Waypoint, $this>
+     * @return BelongsTo<WaypointScreenshot, $this>
      */
-    public function coverScreenshot(): HasOneThrough
+    public function coverScreenshot(): BelongsTo
     {
-        return $this->hasOneThrough(
-            WaypointScreenshot::class,
-            Waypoint::class,
-            'world_id',
-            'waypoint_id',
-            'id',
-            'id',
-        );
+        return $this->belongsTo(WaypointScreenshot::class, 'cover_screenshot_id');
     }
 
     /**

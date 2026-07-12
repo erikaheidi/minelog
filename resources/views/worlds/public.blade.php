@@ -6,7 +6,13 @@
     $dimensions = $waypoints->pluck('dimension')->unique()->values();
 @endphp
 
-<x-layouts.public :title="$world->name">
+<x-layouts.public
+    :title="$world->name"
+    :description="$world->description ?: __('Explore :name, a Minecraft world by :author — :count waypoints mapped on Minelog.', ['name' => $world->name, 'author' => $world->user->name, 'count' => $waypoints->count()])"
+    :image="$world->coverScreenshot?->url()"
+    :canonical="route('worlds.public', $world)"
+    type="article"
+>
     {{-- Hero --}}
     <section class="relative overflow-hidden border-b border-mine-line">
         <div class="pointer-events-none absolute inset-0" style="background: linear-gradient(to bottom, {{ $accent }}33, transparent);"></div>

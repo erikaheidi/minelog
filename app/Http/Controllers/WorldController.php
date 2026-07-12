@@ -11,7 +11,7 @@ class WorldController extends Controller
     {
         abort_unless($world->is_public, 404);
 
-        $world->load('user');
+        $world->load('user', 'coverScreenshot');
 
         return view('worlds.public', [
             'world' => $world,
@@ -23,7 +23,7 @@ class WorldController extends Controller
     {
         abort_unless($world->is_public, 404);
 
-        $world->load('user');
+        $world->load('user', 'coverScreenshot');
 
         return view('worlds.public-map', [
             'world' => $world,

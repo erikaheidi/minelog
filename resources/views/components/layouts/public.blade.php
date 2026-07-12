@@ -1,4 +1,16 @@
-@props(['title' => null])
+@props([
+    'title' => null,
+    'description' => null,
+    'image' => null,
+    'canonical' => null,
+    'type' => 'website',
+    'imageWidth' => null,
+    'imageHeight' => null,
+])
+
+@php
+    $resolvedTitle = filled($title) ? $title.' - '.config('app.name', 'Minelog') : config('app.name', 'Minelog');
+@endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -6,7 +18,17 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>{{ filled($title) ? $title.' - '.config('app.name', 'Minelog') : config('app.name', 'Minelog') }}</title>
+        <title>{{ $resolvedTitle }}</title>
+
+        <x-seo
+            :title="$resolvedTitle"
+            :description="$description"
+            :image="$image"
+            :canonical="$canonical"
+            :type="$type"
+            :imageWidth="$imageWidth"
+            :imageHeight="$imageHeight"
+        />
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">

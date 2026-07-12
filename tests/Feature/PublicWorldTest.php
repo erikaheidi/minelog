@@ -60,14 +60,26 @@ test('the landing lists public worlds and excludes private ones', function () {
         ->assertDontSee('Secret Base');
 });
 
-test('the landing shows a world cover screenshot when one is available', function () {
+test('the landing shows the chosen world cover screenshot', function () {
     $world = World::factory()->public()->create(['name' => 'Coastal Base']);
     $waypoint = Waypoint::factory()->for($world)->create();
     $shot = WaypointScreenshot::factory()->for($waypoint)->create(['disk' => 'public']);
+    $world->update(['cover_screenshot_id' => $shot->id]);
 
     $this->get(route('home'))
         ->assertOk()
         ->assertSee($shot->path);
+});
+
+test('the landing shows a placeholder when no cover is chosen', function () {
+    $world = World::factory()->public()->create(['name' => 'Coastal Base']);
+    $waypoint = Waypoint::factory()->for($world)->create();
+    $shot = WaypointScreenshot::factory()->for($waypoint)->create(['disk' => 'public']);
+
+    // No cover_screenshot_id set: the screenshot is not auto-promoted to the cover.
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertDontSee($shot->path);
 });
 
 test('the landing search filters public worlds by name', function () {

@@ -142,3 +142,58 @@ test('deleting a screenshot is scoped to the mounted world', function () {
 
     expect(WaypointScreenshot::whereKey($shot->id)->exists())->toBeTrue();
 });
+
+test('the owner can set and clear a screenshot as the world cover', function () {
+    $owner = User::factory()->create();
+    $world = World::factory()->for($owner)->create();
+    $wp = Waypoint::factory()->for($world)->create();
+    $shot = WaypointScreenshot::factory()->for($wp)->create();
+
+    $this->actingAs($owner);
+
+    Livewire::test('pages::worlds.show', ['world' => $world])
+        ->call('setCover', $shot->id)
+        ->assertHasNoErrors();
+
+    expect($world->fresh()->cover_screenshot_id)->toBe($shot->id);
+
+    Livewire::test('pages::worlds.show', ['world' => $world])
+        ->call('clearCover')
+        ->assertHasNoErrors();
+
+    expect($world->fresh()->cover_screenshot_id)->toBeNull();
+});
+
+test('setting a cover is scoped to the mounted world', function () {
+    $owner = User::factory()->create();
+    $world = World::factory()->for($owner)->create();
+
+    $otherWorld = World::factory()->create();
+    $otherWp = Waypoint::factory()->for($otherWorld)->create();
+    $foreignShot = WaypointScreenshot::factory()->for($otherWp)->create();
+
+    $this->actingAs($owner);
+
+    expect(fn () => Livewire::test('pages::worlds.show', ['world' => $world])
+        ->call('setCover', $foreignShot->id))
+        ->toThrow(ModelNotFoundException::class);
+
+    expect($world->fresh()->cover_screenshot_id)->toBeNull();
+});
+
+test('deleting the cover screenshot clears the world cover', function () {
+    $owner = User::factory()->create();
+    $world = World::factory()->for($owner)->create();
+    $wp = Waypoint::factory()->for($world)->create();
+    $shot = WaypointScreenshot::factory()->for($wp)->create(['disk' => 'public']);
+    $world->update(['cover_screenshot_id' => $shot->id]);
+
+    $this->actingAs($owner);
+
+    Livewire::test('pages::worlds.show', ['world' => $world])
+        ->call('startEdit', $wp->id)
+        ->call('deleteScreenshot', $shot->id)
+        ->assertHasNoErrors();
+
+    expect($world->fresh()->cover_screenshot_id)->toBeNull();
+});
