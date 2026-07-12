@@ -5,7 +5,12 @@ commands and stores them as JSON in a world dynamic property. Because add-ons on
 cannot make HTTP requests, you export the JSON in-game and paste it into the Minelog web app.
 
 The commands are registered through the stable Custom Commands API, so they work on vanilla
-Bedrock with **no experiments** and can be run by any player (no operator/cheats required).
+Bedrock with **no experiments**. Once cheats are on, any player can run them (they don't need
+operator permission).
+
+> ⚠️ **Cheats must be enabled on the world.** Bedrock only exposes custom slash commands when
+> cheats are turned on, and **turning cheats on disables achievements** for that world. This is
+> a Minecraft limitation, not something the add-on can change.
 
 ## Commands
 
@@ -31,9 +36,13 @@ To build it from source instead, zip the **contents** of this `addon/` directory
 cd addon && zip -r ../minelog.mcpack . -x 'README.md' && cd ..
 ```
 
-Either way, double-click `minelog.mcpack` to import it into Minecraft, then enable the
-**behavior pack** on your Realm's world (Realm settings → world → Behavior Packs). No
-experiments are required — the pack uses the stable Custom Commands API and needs Minecraft
+Either way, double-click `minelog.mcpack` to import it into Minecraft, then set up the world:
+
+1. Enable the **behavior pack** on the world (world/Realm settings → Behavior Packs).
+2. Turn on **Cheats** (world settings → Game → Cheats) so the `/wp:` commands are available.
+   Note this **disables achievements** for that world.
+
+No experiments are required — the pack uses the stable Custom Commands API and needs Minecraft
 **1.21.80 or newer** (where `@minecraft/server` 2.0.0 shipped).
 
 ## Releasing (maintainers)

@@ -22,10 +22,11 @@ The add-on exists because Minecraft Bedrock add-ons running on Realms and regula
 behavior pack captures your positions in-game and you move them into the web app by
 copy-pasting a single line of JSON. With the add-on, the loop looks like this:
 
-1. **Save in-game.** With the *Minelog Waypoints* behavior pack enabled on your world, run
-   `/wp:save "<label>"` to record your exact position (x, y, z + dimension) under a label.
-   The add-on keeps everything in a world dynamic property, so waypoints survive restarts and
-   work on Realms.
+1. **Save in-game.** With the *Minelog Waypoints* behavior pack enabled and **cheats turned on**
+   for the world, run `/wp:save "<label>"` to record your exact position (x, y, z + dimension)
+   under a label. The add-on keeps everything in a world dynamic property, so waypoints survive
+   restarts and work on Realms. (Bedrock only exposes custom commands when cheats are on, which
+   **disables achievements** for that world — a Minecraft limitation.)
 
 2. **Export.** Run `/wp:export` and the add-on prints your whole log as a single JSON line in
    chat. (Because the Switch and some consoles can't copy chat text, you can join the same Realm
@@ -113,10 +114,11 @@ Without them, you can still register and log in with an email and password.
 The add-on is **optional** — you can always add waypoints by hand in the app. Install it when
 you want to capture many exact coordinates in-game instead of typing them in.
 
-The easiest way to install the behavior pack is to **download the latest `minelog.mcpack` from
-the [Releases page](https://github.com/erikaheidi/minelog/releases/latest)** and double-click it
-— Minecraft imports it automatically (works great on Windows). Then enable the behavior pack on
-your world (with the Scripting/Beta APIs experiment on if prompted) and start saving waypoints.
+The easiest way to install the behavior pack is to **download the latest `minelog-<version>.mcpack`
+from the [Releases page](https://github.com/erikaheidi/minelog/releases/latest)** and double-click
+it — Minecraft imports it automatically (works great on Windows). Then enable the behavior pack on
+your world and turn on **Cheats** (world settings → Game → Cheats) so the `/wp:` commands are
+available. Note that enabling cheats disables achievements for that world — a Minecraft limitation.
 
 Prefer to build it from source? Package the pack yourself:
 

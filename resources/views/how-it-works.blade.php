@@ -74,14 +74,21 @@
                         <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">3</span>
                         <div>
                             <p class="font-semibold">{{ __('Enable it on your world') }}</p>
-                            <p class="mt-1 text-sm text-mine-muted">{{ __('For a local world: Create/Edit World → Behavior Packs → activate Minelog Waypoints. For a Realm: Realm settings → World → Behavior Packs. If your version prompts for it, turn on the Scripting / Beta APIs experiment.') }}</p>
+                            <p class="mt-1 text-sm text-mine-muted">{{ __('For a local world: Create/Edit World → Behavior Packs → activate Minelog Waypoints. For a Realm: Realm settings → World → Behavior Packs. No experiments are required.') }}</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-mine-panel-2 text-sm font-bold text-mine-green-2 ring-1 ring-mine-line">4</span>
+                        <div>
+                            <p class="font-semibold">{{ __('Turn on Cheats') }}</p>
+                            <p class="mt-1 text-sm text-mine-muted">{{ __('World settings → Game → Cheats. Bedrock only exposes custom slash commands when cheats are on. Heads up: enabling cheats disables achievements for that world — a Minecraft limitation the add-on can\'t work around.') }}</p>
                         </div>
                     </li>
                 </ol>
 
                 <div class="mt-5 rounded-lg border border-mine-line bg-mine-panel p-4 text-sm text-mine-muted">
                     <span class="font-semibold text-mine-text">{{ __('Requirements:') }}</span>
-                    {{ __('Minecraft Bedrock 1.21+. The add-on uses the @minecraft/server scripting API, which is Bedrock-only (it does not work on Java Edition).') }}
+                    {{ __('Minecraft Bedrock 1.21.80+ with cheats enabled on the world. The add-on uses the @minecraft/server scripting API, which is Bedrock-only (it does not work on Java Edition).') }}
                 </div>
             </div>
 
