@@ -19,7 +19,7 @@ operator permission).
 | `/wp:save "<label>"` | Save your current position with a label (quote multi-word labels) |
 | `/wp:list` | List saved waypoints |
 | `/wp:remove <n>` | Remove waypoint number `n` (from `/wp:list`) |
-| `/wp:export` | Print the full JSON log to copy into Minelog |
+| `/wp:export` | Open a copyable box with the full JSON log to paste into Minelog |
 | `/wp:clear true` | Delete all saved waypoints |
 | `/wp:help` | Show usage |
 
@@ -58,9 +58,14 @@ manifest. Tag `v1.0.0` (or `1.0.0`) for manifest version `[1, 0, 0]`.
 ## Getting data into Minelog
 
 1. Play on the Switch and `/wp:save "<label>"` as you explore.
-2. Join the same Realm from a **PC or phone** Bedrock client (with the pack enabled) and run
-   `/wp:export`.
-3. Copy the printed JSON line and paste it into Minelog's **Import** page.
+2. Join the same Realm from a **PC (Windows)** Bedrock client (with the pack enabled) and run
+   `/wp:export`. A box pops up with the JSON — Minecraft chat text can't be copied on any
+   platform, but a form field can.
+3. Tap the field, select all (**Ctrl+A**) and copy (**Ctrl+C**), then paste it into Minelog's
+   **Import** page.
+
+> The JSON is also printed to chat as a fallback, but chat text isn't selectable on most
+> platforms — use the copy box.
 
 ## Storage / limits
 

@@ -5,6 +5,7 @@ import {
     CustomCommandParamType,
     CustomCommandStatus,
 } from "@minecraft/server";
+import { ModalFormData, FormCancelationReason } from "@minecraft/server-ui";
 
 /**
  * Minelog Waypoints
@@ -169,6 +170,44 @@ function removeCommand(player, number) {
     player.sendMessage(`§aRemoved §f"${removed.label}"§a. ${waypoints.length} left.`);
 }
 
+/**
+ * Show the export JSON in a form text field. Unlike chat, a form text field on
+ * a PC/Windows client is a real input the player can select-all (Ctrl+A) and
+ * copy (Ctrl+C) — chat text isn't copyable on most platforms, which is why the
+ * plain chat print alone doesn't work.
+ *
+ * A form can't open while the player is still in the command/chat UI: `show`
+ * resolves with `cancelationReason: UserBusy`. Retry on the next tick until the
+ * UI is free (bounded so we never loop forever if the player keeps it open).
+ *
+ * @param {import("@minecraft/server").Player} player
+ * @param {string} json
+ * @param {number} count
+ * @param {number} [attempt]
+ */
+function showExportForm(player, json, count, attempt = 0) {
+    const form = new ModalFormData().title("Minelog export").textField(
+        `${count} waypoint(s). Tap the field, select all (Ctrl+A) and copy (Ctrl+C), then paste into Minelog:`,
+        "waypoint JSON",
+        { defaultValue: json }
+    );
+
+    form.show(player)
+        .then((response) => {
+            if (
+                response.canceled &&
+                response.cancelationReason === FormCancelationReason.UserBusy &&
+                attempt < 40
+            ) {
+                system.run(() => showExportForm(player, json, count, attempt + 1));
+            }
+        })
+        .catch(() => {
+            // If forms aren't available for any reason, the chat fallback below
+            // still gives the player the JSON.
+        });
+}
+
 /** @param {import("@minecraft/server").Player} player */
 function exportCommand(player) {
     const waypoints = loadWaypoints();
@@ -176,9 +215,16 @@ function exportCommand(player) {
         player.sendMessage("§7Nothing to export yet.");
         return;
     }
+
+    const json = JSON.stringify(waypoints);
+
+    // Primary path: a copyable form field (works on PC clients).
+    showExportForm(player, json, waypoints.length);
+
+    // Fallback for platforms without form copy: still print to chat.
     player.sendMessage(`§a--- Minelog export (${waypoints.length} waypoint(s)) ---`);
-    player.sendMessage(JSON.stringify(waypoints));
-    player.sendMessage("§a--- copy the line above into Minelog ---");
+    player.sendMessage(json);
+    player.sendMessage("§a--- or copy from the export box that just opened ---");
 }
 
 /**

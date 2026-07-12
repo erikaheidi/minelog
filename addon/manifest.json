@@ -4,7 +4,7 @@
         "name": "Minelog Waypoints",
         "description": "Save your exact position with a label using /wp: commands. Export the log as JSON to import into Minelog.",
         "uuid": "15584113-6ebb-4e53-b4f6-4fc0d310c1f0",
-        "version": [1, 0, 2],
+        "version": [1, 0, 3],
         "min_engine_version": [1, 21, 80]
     },
     "modules": [
@@ -24,6 +24,10 @@
     "dependencies": [
         {
             "module_name": "@minecraft/server",
+            "version": "2.0.0"
+        },
+        {
+            "module_name": "@minecraft/server-ui",
             "version": "2.0.0"
         }
     ]

@@ -28,9 +28,11 @@ copy-pasting a single line of JSON. With the add-on, the loop looks like this:
    restarts and work on Realms. (Bedrock only exposes custom commands when cheats are on, which
    **disables achievements** for that world — a Minecraft limitation.)
 
-2. **Export.** Run `/wp:export` and the add-on prints your whole log as a single JSON line in
-   chat. (Because the Switch and some consoles can't copy chat text, you can join the same Realm
-   from a PC or phone client to run the export and copy it.)
+2. **Export.** Run `/wp:export` and the add-on opens a box with your whole log as a single line
+   of JSON that you can select and copy — Minecraft chat text isn't copyable on any platform, so
+   the add-on hands it to you in a form field instead. (On the Switch and other consoles you
+   still can't copy at all, so join the same Realm from a **PC** client to run the export and
+   copy it there.)
 
 3. **Import.** Paste that JSON into a world on Minelog. The importer creates or updates each
    waypoint, deduplicating on re-import so you can paste repeatedly without creating duplicates.
