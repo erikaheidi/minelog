@@ -15,6 +15,24 @@ test('the public world page embeds waypoint screenshots for the detail modal', f
         ->assertSee($shot->path);
 });
 
+test('the public world page renders the screenshot gallery instead of new-tab links', function () {
+    $world = World::factory()->public()->create();
+    $waypoint = Waypoint::factory()->for($world)->create(['name' => 'Diamond cave']);
+    WaypointScreenshot::factory()->for($waypoint)->create(['disk' => 'public']);
+    WaypointScreenshot::factory()->for($waypoint)->create(['disk' => 'public']);
+
+    $response = $this->get(route('worlds.public', $world))->assertOk();
+
+    // Gallery scaffolding: a large main image bound to the active shot, plus nav helpers and thumbnails.
+    $response->assertSee('wp.shots[activeShot]', false)
+        ->assertSee('prevShot()', false)
+        ->assertSee('nextShot()', false)
+        ->assertSee('activeShot = i', false);
+
+    // The old behavior opened each screenshot in a new tab; that anchor should be gone.
+    $response->assertDontSee(':href="url"', false);
+});
+
 test('a guest can view a public world page', function () {
     $world = World::factory()->public()->create([
         'name' => 'Skyblock Realm',

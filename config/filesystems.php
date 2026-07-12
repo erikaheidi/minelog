@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Screenshot Disk
+    |--------------------------------------------------------------------------
+    |
+    | Waypoint screenshots are displayed on public world pages, so they must
+    | live on a web-servable disk. Locally this is the "public" disk; in
+    | production set SCREENSHOT_DISK (e.g. "s3") to a public-visibility disk.
+    |
+    */
+
+    'screenshots' => env('SCREENSHOT_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

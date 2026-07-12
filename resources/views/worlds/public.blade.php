@@ -71,7 +71,18 @@
         <x-world-tabs :world="$world" active="log" :public="true" />
 
         {{-- Gallery --}}
-        <section x-data="{ open: false, wp: null }" @keydown.escape.window="open = false">
+        <section
+            x-data="{
+                open: false,
+                wp: null,
+                activeShot: 0,
+                prevShot() { this.activeShot = (this.activeShot - 1 + this.wp.shots.length) % this.wp.shots.length },
+                nextShot() { this.activeShot = (this.activeShot + 1) % this.wp.shots.length },
+            }"
+            @keydown.escape.window="open = false"
+            @keydown.arrow-left.window="open && wp && wp.shots.length > 1 && prevShot()"
+            @keydown.arrow-right.window="open && wp && wp.shots.length > 1 && nextShot()"
+        >
             <h2 class="mb-4 text-2xl font-bold tracking-tight">{{ __('Waypoints') }}</h2>
             @if ($waypoints->isEmpty())
                 <div class="rounded-xl border border-dashed border-mine-line py-16 text-center text-mine-muted">
@@ -94,9 +105,9 @@
                         <div
                             role="button"
                             tabindex="0"
-                            @click="wp = @js($wpData); open = true"
-                            @keydown.enter="wp = @js($wpData); open = true"
-                            @keydown.space.prevent="wp = @js($wpData); open = true"
+                            @click="wp = @js($wpData); activeShot = 0; open = true"
+                            @keydown.enter="wp = @js($wpData); activeShot = 0; open = true"
+                            @keydown.space.prevent="wp = @js($wpData); activeShot = 0; open = true"
                             class="flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-mine-line bg-mine-panel shadow-sm transition hover:border-mine-muted hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-mine-muted"
                         >
                             {{-- Screenshot, or a dimension-tinted placeholder header --}}
@@ -142,7 +153,7 @@
                 style="display: none;"
             >
                 <template x-if="wp">
-                    <div class="relative my-8 w-full max-w-2xl overflow-hidden rounded-2xl border border-mine-line bg-mine-panel shadow-xl" @click.stop>
+                    <div class="relative my-8 w-full max-w-3xl overflow-hidden rounded-2xl border border-mine-line bg-mine-panel shadow-xl" @click.stop>
                         <button
                             type="button"
                             @click="open = false"
@@ -166,16 +177,50 @@
                                 </div>
                             </div>
 
-                            {{-- Screenshots --}}
+                            {{-- Screenshots gallery --}}
                             <div class="flex flex-col gap-3 px-6 pb-6" x-show="wp.shots.length">
                                 <h4 class="text-sm font-semibold uppercase tracking-wide text-mine-muted">
                                     {{ __('Screenshots') }} (<span x-text="wp.shots.length"></span>)
                                 </h4>
-                                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                                {{-- Main image --}}
+                                <div class="relative overflow-hidden rounded-xl border border-mine-line bg-black">
+                                    <img :src="wp.shots[activeShot]" alt="" class="mx-auto max-h-[55vh] w-full object-contain" />
+
+                                    <template x-if="wp.shots.length > 1">
+                                        <div>
+                                            <button
+                                                type="button"
+                                                @click="prevShot()"
+                                                class="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-lg text-white transition hover:bg-black/70"
+                                                aria-label="{{ __('Previous screenshot') }}"
+                                            >&lsaquo;</button>
+                                            <button
+                                                type="button"
+                                                @click="nextShot()"
+                                                class="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-lg text-white transition hover:bg-black/70"
+                                                aria-label="{{ __('Next screenshot') }}"
+                                            >&rsaquo;</button>
+                                            <span
+                                                class="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-semibold text-white"
+                                                x-text="(activeShot + 1) + ' / ' + wp.shots.length"
+                                            ></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                {{-- Thumbnails --}}
+                                <div class="flex flex-wrap gap-2" x-show="wp.shots.length > 1">
                                     <template x-for="(url, i) in wp.shots" :key="i">
-                                        <a :href="url" target="_blank" rel="noopener" class="block overflow-hidden rounded-xl border border-mine-line">
-                                            <img :src="url" alt="" class="aspect-video w-full object-cover transition hover:scale-[1.02]" />
-                                        </a>
+                                        <button
+                                            type="button"
+                                            @click="activeShot = i"
+                                            class="overflow-hidden rounded-lg border border-mine-line transition"
+                                            :class="activeShot === i ? 'ring-2 ring-mine-muted' : 'opacity-70 hover:opacity-100'"
+                                            :aria-label="'{{ __('Screenshot') }} ' + (i + 1)"
+                                        >
+                                            <img :src="url" alt="" class="h-16 w-24 object-cover" />
+                                        </button>
                                     </template>
                                 </div>
                             </div>

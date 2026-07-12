@@ -200,7 +200,8 @@ new #[Title('World')] class extends Component {
             return;
         }
 
-        $disk = config('filesystems.default');
+        // Screenshots are displayed on public world pages, so they must live on a web-servable disk.
+        $disk = config('filesystems.screenshots');
         $path = $this->newScreenshot->store('screenshots/'.$waypoint->id, $disk);
 
         $waypoint->screenshots()->create([

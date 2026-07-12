@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 beforeEach(function () {
-    config(['filesystems.default' => 'public']);
+    // The default disk is intentionally the private 'local' disk to prove screenshots
+    // follow the dedicated 'screenshots' disk config, not the framework default.
+    config(['filesystems.default' => 'local', 'filesystems.screenshots' => 'public']);
     Storage::fake('public');
 });
 
